@@ -12,12 +12,17 @@ import { character } from "../constants.js"; // ← Add this import
 
 
 //  Экспорт
+export function animation_scale_obj(object, animations_scale, return_animation) {
+    object.scale = vec2(animations_scale)
+    wait(wait_enimation, () => {
+        object.scale = vec2(return_animation)
+    })
+}
 
-
-export const makeOrnateFrame = () => {
+export const makeOrnateFrame = (width, height) => {
     // Основная панель
     add([
-        rect(WIDTH, HEIGHT / 8, { radius: 4 }),
+        rect(width, height, { radius: 4 }),
         color(20, 20, 10),
         opacity(0.7),
         outline(2, rgb(150, 120, 80)),
@@ -51,9 +56,11 @@ export function getPassiveIncome(index) {
     }
     level = character_passive.shadow_economy[index];
     if (level > 0) {
-        passiveIncome += passive_income.shadow_economy[index].income(level);
+        let risk = passive_income.shadow_economy[index].risk
+        if (Math.random() > risk) {
+            passiveIncome += passive_income.shadow_economy[index].income(level);
+        }
     }
-    console.log(`Passive income for index ${index}: ${passiveIncome}`);
     return passiveIncome;
 
 }
@@ -88,7 +95,7 @@ export function mainScene() {
         loadSprite("hero", `../sprites/character/${character.id_character}.png`);
 
         const hero = add([
-            pos(WIDTH / 2, HEIGHT / 2 - 10),
+            pos(WIDTH / 2, HEIGHT / 2 + 20),
             sprite("hero"),
             scale(0.35),
             area({ scale: true }),
@@ -104,15 +111,12 @@ export function mainScene() {
             character.money += 1;
             character.total_earned += 1;
             character.energy -= 1;
-            hero.scale = vec2(0.37);
-            wait(wait_enimation, () => {
-                hero.scale = vec2(0.4); 
-            });
+            animation_scale_obj(hero, 0.37, 0.4)
         });
 
 
         // Инициализация
-        makeOrnateFrame();
+        makeOrnateFrame( WIDTH, HEIGHT / 6.7);
 
         const stateText = () => {
             // Приводим все числовые значения к Number
@@ -126,8 +130,9 @@ export function mainScene() {
             const energy = Math.min(Number(character.energy), 100);
 
             return `
-            💰 ${money}        💎 ${diamonds}      📅 ${days}     ❤️ ${hp}/100  
-            🍗 ${hungry}%  🏦 ${(key_bid * 100).toFixed(1)}% 📊 +${dailyIncome}/день 🔋 ${energy}/100
+            💰 ${money}        💎 ${diamonds}           📊 +${dailyIncome}/день    
+            ❤️ ${hp}/100     🍗 ${hungry}%    🔋 ${energy}/100
+            📅 ${days}                                   🏦 ${(key_bid * 100).toFixed(1)}% 
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -147,7 +152,7 @@ export function mainScene() {
                 width: width() - 40, // Перенос по ширине
                 lineSpacing: 20      // Отступ между строками
             }),
-            pos(20, 50),
+            pos(20, 68),
             anchor("left"),
             color(255, 255, 255),
             fixed(),
@@ -167,23 +172,43 @@ export function mainScene() {
                 anchor("center"), // Меняем с "topleft" на "center"
                 `button_${buttons_game[i]}` // Тег для идентификации
             ]);
+
             onClick(`button_${buttons_game[i]}`, () => {
-                    btn.scale = vec2(0.9); 
-                    wait(wait_enimation, () => {
-                        btn.scale = vec2(BUTTONSIZE / 64); 
-                    });
-                    if (buttons_game[i] == 'passive') {
-                        go('passive')
-                    }
+                animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+                if (buttons_game[i] == 'passive') {
+                    go('passive')
+                }
              });
 
         }
 
-
-        //Циклы бесконечные
-        
+ 
         loop(0.5, () => {
             stateLabel.text = stateText();
+
+            for (let i = 0; i < 5; i ++) {
+                let obj = passive_income.investments[i]
+                let obj_ch = character_passive.investments[i]
+                let cost = obj_ch.current_price
+                if (obj_ch.delay == 0){
+                    obj_ch.delay = obj.delay
+                    const baseProbability = obj.chance(character.key_bid);
+                    const randomValue = Math.random();
+                    const isPositiveChange = randomValue < baseProbability;
+                    const changeIntensity = 0.05 + Math.random() * 0.1;
+                    if (isPositiveChange) {
+                        obj_ch.current_price *= (1 + changeIntensity);
+                    } else {
+                        obj_ch.current_price *= (1 - changeIntensity * 0.8); 
+                    }
+
+                    
+
+                        }
+                else {
+                    obj_ch.delay -= 1;
+                }
+            }
 
         });
 

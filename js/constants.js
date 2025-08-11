@@ -3,7 +3,7 @@ export const WIDTH = 500
 export const BUTTON_COUNT = 6
 export const BUTTONSIZE = Math.floor(Math.min(WIDTH, window.innerWidth) / BUTTON_COUNT)
 export const buttons_game = ['profit', 'passive', 'vote', 'update', 'shop', 'setting']
-export const button_passive = ['home', 'real_estate', 'village_business', 'investments', 'shadow_economy', 'smile_face']
+export const button_passive = ['', 'real_estate', 'village_business', 'investments', 'shadow_economy', 'smile_face']
 export const wait_enimation = 0.05
 
 
@@ -72,23 +72,28 @@ export const character_passive = {
     investments: {
         0: {
             count: 0,
-            current_price: 0,
+            delay: 0,
+            current_price: 100,
         },
         1: {
             count: 0,
-            current_price: 0,
+            delay: 0,
+            current_price: 20,
         },
         2: {
             count: 0,
-            current_price: 0,
+            delay: 0,
+            current_price: 400,
         },
         3: {
             count: 0,
-            current_price: 0,
+            delay: 0,
+            current_price: 20,
         },
         4: {
             count: 0,
-            current_price: 0,
+            delay: 0,
+            current_price: 10000,
         },
     },
 
@@ -101,6 +106,7 @@ export const character_passive = {
     }
 
 }
+
 
 
 
@@ -188,36 +194,36 @@ export const passive_income = {
             name: "Сберкнижка",
             description: "Банковские проценты",
             cost: 100,
-            chance: bid => 0.25 / (bid + 1),
-            delay: 90
+            chance: bid => 0.6 / (bid + 1),
+            delay: 60
         },
         1: {
             name: "Скот",
             description: "Покупка/продажа животных",
             cost: 200,
-            chance: bid => 0.35 / (bid + 1),
-            delay: 60
+            chance: bid => 0.56 / (bid + 1),
+            delay: 23
         },
         2: {
             name: "Зерно",
             description: "Спекуляция урожаем",
-            chance: bid => 0.5 / (bid + 1),
+            chance: bid => 0.45 / (bid + 1),
             cost: 400,
-            delay: 30
+            delay: 15
         },
         3: {
             name: "Инструменты",
             description: "Аренда соседям",
-            chance: bid => 0.2 / (bid + 1),
+            chance: bid => 0.4 / (bid + 1),
             cost: 20,
-            delay: 15
+            delay: 8
         },
         4: {
             name: "Ломбард",
             cost: 1000,
             description: "Под залог вещей",
-            chance: bid => 0.6 / (bid + 1),
-            delay: 7
+            chance: bid => 0.3 / (bid + 1),
+            delay: 5
         }
     },
 
