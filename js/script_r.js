@@ -13,11 +13,12 @@ const k = kaboom({
 
 
 // Загрузка аудиофайлов
-loadSound("bg2", "sounds/1.mp3");
+loadSound("bg2", "sounds/4.mp3");
 
 // Запуск всех треков с loop
 const track1 = play("bg2", {
     volume: 0.2,
+    speed: 1,
     loop: true
 });
 

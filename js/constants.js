@@ -3,13 +3,13 @@ export const WIDTH = 500
 export const BUTTON_COUNT = 6
 export const BUTTONSIZE = Math.floor(Math.min(WIDTH, window.innerWidth) / BUTTON_COUNT)
 export const buttons_game = ['profit', 'passive', 'vote', 'update', 'shop', 'setting']
-export const button_passive = ['home', 'real_estate', 'village_business', 'investments', 'shadow_economy']
+export const button_passive = ['home', 'real_estate', 'village_business', 'investments', 'shadow_economy', 'smile_face']
 export const wait_enimation = 0.05
 
 
 export const character = {
     // Базовые ресурсы
-    money: 0,
+    money: 10000,
     diamonds: 0,
     reputation: 0, // Репутация в деревне
     energy: 100, // Дневной запас энергии
@@ -30,6 +30,9 @@ export const character = {
     hp: 100,
 
     // Идентификация
+    // как сделаем, будет на каждой локайии по 10 персонажей
+    // Думаю персонажи должны иметь свои бонусы их сджелаю в отдельном файле,
+    // Который при надевании персонража будет улучшать эти статы 
     id_character: 0,
     id_user: 0,
     name: "Новичок", // Имя персонажа
@@ -107,35 +110,35 @@ export const passive_income = {
             name: "Курятник",
             description: "Продажа яиц соседям",
             level: 0,
-            income: l => 2 * Math.pow(1.2, l),
+            income: l => 20 * Math.pow(1.2, l),
             cost: l => 50 * Math.pow(1.15, l)
         },
         1: {
             name: "Огород",
             description: "Выращивание овощей",
             level: 0,
-            income: l => 3 * Math.pow(1.25, l),
+            income: l => 30 * Math.pow(1.25, l),
             cost: l => 80 * Math.pow(1.2, l)
         },
         2: {
             name: "Сарай",
             description: "Хранение и перепродажа",
             level: 0,
-            income: l => 4 * Math.pow(1.3, l),
+            income: l => 40 * Math.pow(1.3, l),
             cost: l => 120 * Math.pow(1.25, l)
         },
         3: {
             name: "Дом сдаётся",
             description: "Аренда комнат",
             level: 0,
-            income: l => 5 * Math.pow(1.35, l),
+            income: l => 50 * Math.pow(1.35, l),
             cost: l => 200 * Math.pow(1.3, l)
         },
         4: {
             name: "Магазин",
             description: "Деревенский ларек",
             level: 0,
-            income: l => 6 * Math.pow(1.4, l),
+            income: l => 60 * Math.pow(1.4, l),
             cost: l => 300 * Math.pow(1.35, l)
         }
     },
@@ -146,28 +149,28 @@ export const passive_income = {
             name: "Пасека",
             description: "Мёд на продажу",
             level: 0,
-            income: l => 4 * Math.pow(1.25, l),
+            income: l => 40 * Math.pow(1.25, l),
             cost: l => 150 * Math.pow(1.2, l)
         },
         1: {
             name: "Корова",
             description: "Молоко и творог",
             level: 0,
-            income: l => 5 * Math.pow(1.3, l),
+            income: l => 50 * Math.pow(1.3, l),
             cost: l => 180 * Math.pow(1.25, l)
         },
         2: {
             name: "Трактор",
             description: "Аренда техники",
             level: 0,
-            income: l => 7 * Math.pow(1.35, l),
+            income: l => 70 * Math.pow(1.35, l),
             cost: l => 250 * Math.pow(1.3, l)
         },
         3: {
             name: "Баня",
             description: "Платная баня для всех",
             level: 0,
-            income: l => 6 * Math.pow(1.3, l),
+            income: l => 60 * Math.pow(1.3, l),
             cost: l => 220 * Math.pow(1.25, l)
         },
         4: {
@@ -224,7 +227,7 @@ export const passive_income = {
             name: "Самогон",
             description: "Наливайка в гараже",
             risk: 0.3,
-            income: l => 8 * Math.pow(1.5, l),
+            income: l => 80* Math.pow(1.5, l),
             cost: l => 150 * Math.pow(1.4, l),
             raid: l => 0.02 * l
         },
@@ -232,7 +235,7 @@ export const passive_income = {
             name: "Браконьерство",
             description: "Лесная охота",
             risk: 0.4,
-            income: l => 10 * Math.pow(1.6, l),
+            income: l => 100 * Math.pow(1.6, l),
             cost: l => 200 * Math.pow(1.5, l),
             raid: l => 0.03 * l
         },
@@ -240,7 +243,7 @@ export const passive_income = {
             name: "Солярка",
             description: "Топливо со склада",
             risk: 0.5,
-            income: l => 12 * Math.pow(1.7, l),
+            income: l => 120 * Math.pow(1.7, l),
             cost: l => 300 * Math.pow(1.6, l),
             raid: l => 0.05 * l
         },
@@ -248,7 +251,7 @@ export const passive_income = {
             name: "Карты",
             description: "Подпольный покер",
             risk: 0.6,
-            income: l => 15 * Math.pow(1.8, l),
+            income: l => 150 * Math.pow(1.8, l),
             cost: l => 400 * Math.pow(1.7, l),
             raid: l => 0.07 * l
         },
@@ -256,7 +259,7 @@ export const passive_income = {
             name: "Куры",
             description: "Подпольные бои",
             risk: 0.7,
-            income: l => 20 * Math.pow(2.0, l),
+            income: l => 200 * Math.pow(2.0, l),
             cost: l => 500 * Math.pow(1.8, l),
             raid: l => 0.1 * l
         }

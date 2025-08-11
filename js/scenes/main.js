@@ -97,9 +97,7 @@ export function mainScene() {
             ])
 
         onClick("hero", () => {
-            console.log("Персонаж нажат");
             if (character.energy <= 0) {
-                console.log("Недостаточно энергии для заработка");
                 return;
             }
 
@@ -118,18 +116,18 @@ export function mainScene() {
 
         const stateText = () => {
             // Приводим все числовые значения к Number
-            const money = Number(character.money);
+            const money = Math.floor(Number(character.money));
             const diamonds = Number(character.diamonds);
             const days = Number(character.days);
             const hp = Number(character.hp);
             const hungry = Number(character.hungry);
             const key_bid = Number(character.key_bid);
-            const dailyIncome = Number(dailyPassiveIncome);
+            const dailyIncome = Math.floor(Number(dailyPassiveIncome));
             const energy = Math.min(Number(character.energy), 100);
 
             return `
             💰 ${money}        💎 ${diamonds}      📅 ${days}     ❤️ ${hp}/100  
-            🍗 ${hungry}%    🏦 ${(key_bid * 100).toFixed(1)}% 📊 +${dailyIncome}/день 🔋 ${energy}/100
+            🍗 ${hungry}%  🏦 ${(key_bid * 100).toFixed(1)}% 📊 +${dailyIncome}/день 🔋 ${energy}/100
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -169,7 +167,6 @@ export function mainScene() {
                 anchor("center"), // Меняем с "topleft" на "center"
                 `button_${buttons_game[i]}` // Тег для идентификации
             ]);
-            console.log(`Кнопка button_${buttons_game[i]}`);
             onClick(`button_${buttons_game[i]}`, () => {
                     btn.scale = vec2(0.9); 
                     wait(wait_enimation, () => {
