@@ -1,6 +1,7 @@
 import { mainScene } from './scenes/main.js';
 import { passiveincomeScene } from './scenes/passive.js';
 import { WIDTH, HEIGHT } from './constants.js';
+import { profitupgradeScene } from './scenes/profit.js';
 
 
 const k = kaboom({
@@ -13,7 +14,7 @@ const k = kaboom({
 
 
 // Загрузка аудиофайлов
-loadSound("bg2", "sounds/4.mp3");
+loadSound("bg2", "sounds/6.mp3");
 
 // Запуск всех треков с loop
 const track1 = play("bg2", {
@@ -25,5 +26,6 @@ const track1 = play("bg2", {
 
 // Регистрация сцен
 passiveincomeScene();
+profitupgradeScene();
 mainScene();
 go("main");

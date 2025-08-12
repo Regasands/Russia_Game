@@ -8,6 +8,7 @@ import {
     passive_income,
     wait_enimation,
     button_passive,
+    global_style,
 } from "../constants.js";
 
 
@@ -15,13 +16,12 @@ import { character } from "../constants.js";
 import { makeOrnateFrame, getPassiveIncome, animation_scale_obj } from "./main.js";
 
 
+
 function create_invest_card(obj, x, y, cardlist, index) {
-    const style = {
-        color: rgb(255, 255, 150),   // Светло-желтый (инвестиции)
-        icon: "📈",
-        textColor: rgb(139, 69, 19)  // Коричневый
-    },
-    card = add([
+    const style = global_style.investment
+
+
+    let card = add([
         rect(WIDTH, HEIGHT / 10, { radius: 10 }),
         area(),
         pos(x, y),
@@ -102,42 +102,16 @@ function create_invest_card(obj, x, y, cardlist, index) {
     cardlist.push(card)
     return card
 
-
-
-
-
-
 }
 
 
 function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist, character_part) {
         const currentIncome =  Math.round(obj.income(level));
-        let nextIncome
-        nextIncome = isMaxLevel ? null : Math.round(obj.income(level + 1));
+        let nextIncome = isMaxLevel ? null : Math.round(obj.income(level + 1));
         let card;
 
-        // Определяем стиль в зависимости от категории
 
-
-        const categoryStyles = {
-            real_estate: {
-                color: rgb(173, 216, 230),  // Голубой (недвижимость)
-                icon: "🏠",
-                textColor: rgb(0, 0, 139)    // Темно-синий
-            },
-            village_business: {
-                color: rgb(144, 238, 144),   // Светло-зеленый (сельский бизнес)
-                icon: "🌾",
-                textColor: rgb(0, 100, 0)    // Темно-зеленый
-            },
-            shadow_economy: {
-                color: rgb(169, 169, 169),   // Серый (теневая экономика)
-                icon: "🕶️",
-                textColor: rgb(47, 79, 79)   // Темно-серый
-            }
-        };
-
-        const style = categoryStyles[character_part] || {
+        const style = global_style[character_part] || {
             color: rgb(30, 35, 45),
             icon: "",
             textColor: rgb(0, 0, 0)
@@ -229,14 +203,15 @@ function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist, chara
 
 export function delcard(cardlist) {
     if (!cardlist || !Array.isArray(cardlist)) return;
-    
     cardlist.forEach(card => {
         if (!card) return;
 
         if (card.children) {
             card.children.forEach(child => destroy(child));
         }
+
         destroy(card);
+
     });
 }
 
@@ -250,12 +225,11 @@ export function passiveincomeScene () {
         // считае пассивный доход
 
         function passive_insome_last() {
-        let dailyPassiveIncome = 0
-        for (let i = 0; i < 5; i ++){
-            dailyPassiveIncome += getPassiveIncome(i)
-        }
-
-        return dailyPassiveIncome
+            let dailyPassiveIncome = 0
+            for (let i = 0; i < 5; i ++){
+                dailyPassiveIncome += getPassiveIncome(i)
+            }
+            return dailyPassiveIncome
         }
 
 
@@ -299,9 +273,6 @@ export function passiveincomeScene () {
 
 
         // рендер кнопок
-
-
-
         loadSprite("home", "../sprites/button/home.png");
         loadSprite('block_button', '../sprites/button/block_button.png')
 
@@ -320,19 +291,15 @@ export function passiveincomeScene () {
         });
 
 
-        // глобальный реесор карточек, лучшее мне не пришло в голову
+        // глобальный рендор  карточек, лучшее мне не пришло в голову
         var global_card = []
 
 
         // глобальная регистрация покупки карт
-        let fast_block_button = []
         let click = 1
         let sell_click = 1
+
         function render_cards(obj, character_part) {
-
-            delcard(fast_block_button)
-            fast_block_button = []
-
             for (let i2 = 0; i2 < Object.keys(obj).length; i2++) {
                 let level; 
                 let isMaxLevel;
@@ -346,10 +313,10 @@ export function passiveincomeScene () {
                     cost = isMaxLevel ? "MAX" : Math.round(obj[i2].cost(level + 1));
                 }
                 if (character_part == 'investments' ){
-                    const card = create_invest_card(obj[i2], WIDTH / 2, y - 20, global_card, i2)
+                    create_invest_card(obj[i2], WIDTH / 2, y - 20, global_card, i2)
 
                 } else if (i2 == 0 || character_passive[character_part][i2 - 1] > 0){
-                    const card = createCard(obj[i2],
+                    createCard(obj[i2],
                         level,
                         isMaxLevel,
                         cost,
@@ -362,7 +329,7 @@ export function passiveincomeScene () {
                         anchor('center'),
                         'block_button'
                     ])
-                    fast_block_button.push(card)
+                    global_card.push(card)
                 }
 
 
@@ -432,8 +399,6 @@ export function passiveincomeScene () {
                         return;
 
                     };
-
-                
 
                     if (character.money >= cost) {
                         play('upgrade_button', {valume: 1})

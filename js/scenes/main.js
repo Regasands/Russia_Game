@@ -6,12 +6,12 @@ import {
     BUTTON_COUNT,
     character_passive,
     passive_income,
-    wait_enimation
+    wait_enimation,
+    character
 } from "../constants.js";
-import { character } from "../constants.js"; // ← Add this import
 
 
-//  Экспорт
+//  Экспорт,
 export function animation_scale_obj(object, animations_scale, return_animation) {
     object.scale = vec2(animations_scale)
     wait(wait_enimation, () => {
@@ -56,10 +56,7 @@ export function getPassiveIncome(index) {
     }
     level = character_passive.shadow_economy[index];
     if (level > 0) {
-        let risk = passive_income.shadow_economy[index].risk
-        if (Math.random() > risk) {
-            passiveIncome += passive_income.shadow_economy[index].income(level);
-        }
+        passiveIncome += passive_income.shadow_economy[index].income(level);
     }
     return passiveIncome;
 
@@ -177,6 +174,8 @@ export function mainScene() {
                 animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
                 if (buttons_game[i] == 'passive') {
                     go('passive')
+                } else if (buttons_game[i] == 'profit') {
+                    go('profit')
                 }
              });
 

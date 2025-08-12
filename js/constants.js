@@ -4,6 +4,7 @@ export const BUTTON_COUNT = 6
 export const BUTTONSIZE = Math.floor(Math.min(WIDTH, window.innerWidth) / BUTTON_COUNT)
 export const buttons_game = ['profit', 'passive', 'vote', 'update', 'shop', 'setting']
 export const button_passive = ['', 'real_estate', 'village_business', 'investments', 'shadow_economy', 'smile_face']
+export const button_profit = ['', 'upgrade', 'new_character', 'new_background', 'exchanger', 'new_event']
 export const wait_enimation = 0.05
 
 
@@ -234,7 +235,7 @@ export const passive_income = {
             description: "Наливайка в гараже",
             risk: 0.3,
             income: l => 80* Math.pow(1.5, l),
-            cost: l => 150 * Math.pow(1.4, l),
+            cost: l => 250 * Math.pow(1.4, l),
             raid: l => 0.02 * l
         },
         1: {
@@ -242,7 +243,7 @@ export const passive_income = {
             description: "Лесная охота",
             risk: 0.4,
             income: l => 100 * Math.pow(1.6, l),
-            cost: l => 200 * Math.pow(1.5, l),
+            cost: l => 400 * Math.pow(1.5, l),
             raid: l => 0.03 * l
         },
         2: {
@@ -250,7 +251,7 @@ export const passive_income = {
             description: "Топливо со склада",
             risk: 0.5,
             income: l => 120 * Math.pow(1.7, l),
-            cost: l => 300 * Math.pow(1.6, l),
+            cost: l => 500 * Math.pow(1.6, l),
             raid: l => 0.05 * l
         },
         3: {
@@ -258,7 +259,7 @@ export const passive_income = {
             description: "Подпольный покер",
             risk: 0.6,
             income: l => 150 * Math.pow(1.8, l),
-            cost: l => 400 * Math.pow(1.7, l),
+            cost: l => 800 * Math.pow(1.7, l),
             raid: l => 0.07 * l
         },
         4: {
@@ -266,8 +267,30 @@ export const passive_income = {
             description: "Подпольные бои",
             risk: 0.7,
             income: l => 200 * Math.pow(2.0, l),
-            cost: l => 500 * Math.pow(1.8, l),
+            cost: l => 1000 * Math.pow(1.8, l),
             raid: l => 0.1 * l
         }
+    }
+}
+export const global_style = {
+    investment: {
+        color: "#FFFF96",   // Светло-желтый
+        icon: "📈",
+        textColor: "#8B4513" // Коричневый
+    },
+    real_estate: {
+        color: "#ADD8E6",   // Голубой
+        icon: "🏠",
+        textColor: "#00008B" // Темно-синий
+    },
+    village_business: {
+        color: "#90EE90",   // Светло-зеленый
+        icon: "🌾",
+        textColor: "#006400" // Темно-зеленый
+    },
+    shadow_economy: {
+        color: "#A9A9A9",   // Серый
+        icon: "🕶️",
+        textColor: "#2F4F4F" // Темно-серый
     }
 }
