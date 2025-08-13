@@ -12,9 +12,8 @@ const k = kaboom({
 });
 
 
-
 // Загрузка аудиофайлов
-loadSound("bg2", "sounds/6.mp3");
+loadSound("bg2", "sounds/background_sounds/6.mp3");
 
 // Запуск всех треков с loop
 const track1 = play("bg2", {

@@ -219,8 +219,9 @@ export function delcard(cardlist) {
 export function passiveincomeScene () {
     scene("passive", () => {
 
-        loadSound("ahyou", "sounds/fack_you.mp3");
-        loadSound('upgrade_button', 'sounds/upgrade_button.mp3')
+        loadSound("ahyou", "sounds/game_sounds/fack_you.mp3");
+        loadSound('upgrade_button', 'sounds/game_sounds/upgrade_button.mp3')
+        loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
 
         // считае пассивный доход
 
@@ -247,7 +248,7 @@ export function passiveincomeScene () {
             const dailyIncome = Math.floor(Number(dailyPassiveIncome));
 
             return `
-            💰 ${money}         💎 ${diamonds}           🏦 ${(key_bid * 100).toFixed(1)}%           📊${dailyIncome}
+            💰 ${money}         💎 ${diamonds}      🏦 ${(key_bid * 100).toFixed(1)}%        📊${dailyIncome}
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -410,6 +411,8 @@ export function passiveincomeScene () {
                             render_cards(obj, character_part);
                         })
 
+                    } else  {
+                        play('no_money', {volume: 0.2, speed: 1.5})
                     }
 
                 })
