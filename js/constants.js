@@ -8,13 +8,16 @@ export const button_profit = ['', 'upgrade', 'new_character', 'new_background', 
 export const wait_enimation = 0.05
 
 
+
+// Характеристики самого персонажа
+
 export const character = {
     // Базовые ресурсы
     money: 100,
     diamonds: 0,
     reputation: 0,
-    energy: 500, // Репутация в деревне
-    time_game: 6,
+    energy: 200, // Репутация в деревне
+    time_game: 20,
 
 
     // прокачиваемые  значения 
@@ -25,7 +28,6 @@ export const character = {
 
 
 
-
     hungry_gap: 10,
     hp_gap: 10,
 
@@ -33,22 +35,31 @@ export const character = {
     // Прогресс
     days: 0,
     total_earned: 0, // Всего заработано за всё время
+
+    // Бусты даваемые персонажими  множетли
+    boost: {
+        luck: 0,
+        click: 1,
+        crete: 1,
+        income: 1,
+        energy: 1,
+    },
     
+
     // Характеристики
     hp: 100,
+    luck: 0,
 
-    // Идентификация
-    // как сделаем, будет на каждой локайии по 10 персонажей
-    // Думаю персонажи должны иметь свои бонусы их сджелаю в отдельном файле,
-    // Который при надевании персонража будет улучшать эти статы 
+
+
     id_character: 1,
+    background: 0,
     id_user: 0,
     name: "Новичок", // Имя персонажа
     
     // Состояния
     hungry: 100,
     vote: 0,
-    background: 0,
     key_bid: 0.1,
 
     // нужно для обучения
@@ -56,11 +67,6 @@ export const character = {
     is_first_passive: true,
     is_first_profit: true,
     
-
-    buffs: {
-        harvest_boost: 0, // Бонус к урожаю (%)
-        price_discount: 0 // Скидка на покупки (%)
-    }
 };
 
 
@@ -120,8 +126,31 @@ export const character_passive = {
 
 }
 
+export const character_open_hero = {
+    0: {
+        is_open: true,
+        is_wear: true,
+    },
+    1: {
+        is_open: false,
+        is_wear: false,
+    },
+    2: {
+        is_open: false,
+        is_wear: false,
+    },
+    3: {
+        is_open: false,
+        is_wear: false,
+    },
+    4: {
+        is_open: false,
+        is_wear: false,
+    }
+};
 
 
+// система инвестицый для пассивного дохода
 
 export const passive_income = {
     'real_estate': {
@@ -204,17 +233,17 @@ export const passive_income = {
     // 3. Инвестиции (ID 10-14)
     'investments': {
         0: {
-            name: "Сберкнижка",
+            name: "Банк Монеточка",
             description: "Банковские проценты",
             cost: 100,
-            chance: bid => 0.6 / (bid + 1),
+            chance: bid => 0.55 / (bid + 1),
             delay: 60
         },
         1: {
             name: "Скот",
             description: "Покупка/продажа животных",
             cost: 200,
-            chance: bid => 0.56 / (bid + 1),
+            chance: bid => 0.5 / (bid + 1),
             delay: 23
         },
         2: {
@@ -227,7 +256,7 @@ export const passive_income = {
         3: {
             name: "Инструменты",
             description: "Аренда соседям",
-            chance: bid => 0.4 / (bid + 1),
+            chance: bid => 0.43 / (bid + 1),
             cost: 20,
             delay: 8
         },
@@ -235,7 +264,7 @@ export const passive_income = {
             name: "Ломбард",
             cost: 1000,
             description: "Под залог вещей",
-            chance: bid => 0.3 / (bid + 1),
+            chance: bid => 0.4 / (bid + 1),
             delay: 5
         }
     },
@@ -284,6 +313,8 @@ export const passive_income = {
         }
     }
 }
+
+// глобальные стили для всех кнопок и карт
 export const global_style = {
     investment: {
         color: "#FFFF96",   // Светло-желтый
@@ -338,7 +369,7 @@ export const global_style = {
     }
 };
 
-
+// система upgrade для profit
 export const upgrades = {
     // Основной клик (мощный рост до 1000+)
     click_boost: {
@@ -347,7 +378,7 @@ export const upgrades = {
         level: 0,
         maxLevel: 15,
         cost: (level) => Math.round(100 + 10 * Math.pow(2.3, level)), 
-        value: (level) => Math.round(Math.pow(1.3, level + 2)), 
+        value: (level) => Math.round(Math.pow(1.6, level)), 
     },
 
     // Критический урожай (3x)
@@ -376,7 +407,88 @@ export const upgrades = {
         level: 0,
         maxLevel: 10,
         cost: (level) => Math.round(150 * Math.pow(2.3, level)), // 150, 225, 338...
-        value: (level) => Math.round(499 + Math.pow(1.5, level * 3.3)), // +1000, +1500... (+8500 на 15 ур.)
+        value: (level) => Math.round(199 + Math.pow(1.5, level * 3.3)), // +1000, +1500... (+8500 на 15 ур.)
+    }
+};
+// Смена дня и ночи 
+
+export const DAY_NIGHT_CYCLE = {
+    NIGHT: {
+        color: 0x020210,         // Почти чёрный с лёгким синим оттенком
+        opacity: 0.45,           // Очень тёмная ночь
+        start: 21,
+        end: 5,
+        name: "NIGHT"
+    },
+    DAWN: {
+        color: 0x3a2e1b,         // Тёмный кофейный рассвет
+        opacity: 0.3,
+        start: 5,
+        end: 11,
+        name: "DAWN"
+    },
+    DAY: {
+        color: 0x121212,         // Тёмно-серый (вместо чистого чёрного)
+        opacity: 0.15,           // Лёгкое затемнение даже днём
+        start: 12,
+        end: 18,
+        name: "DAY"
+    },
+    DUSK: {
+        color: 0x4a251a,         // Тёмный красно-коричневый закат
+        opacity: 0.35,
+        start: 18,
+        end: 21,
+        name: "DUSK"
     }
 };
 
+export const heroes_info = {
+    0: {
+        id: 0,
+        name: "🥔Работяга ",
+        description: "Бустит клики на 2x",
+        price: 150,
+        effect: {
+            click: 2
+        }
+    },
+    1: { 
+        id: 1,
+        name: "Сбережливый мальчишка",
+        description: "Запас и восстоновление энергии 2x",
+        price: 250,
+        effect: {
+            energy_max: 2,
+            energy_recovery: 2,
+
+        }
+    },
+    2: {  
+        id: 2,
+        name: "🐝Инвестор от бога",
+        description: "Благодаря пчелкам очень везучий парниша",
+        price: 600,
+        effect: {
+            luck: 0.15
+        }
+    },
+    3: { 
+        id: 3,
+        name: "Точный  мужик",
+        description: "Крит шанс 2x",
+        price: 300,
+        effect: {
+            crete: 2
+        }
+    },
+    4: { 
+        id: 4,
+        name: "🚜 Тракторный Тиран",
+        description: "Все его бизнесы приносят 2x дохода !",
+        price: 1000,
+        effect: {
+            income: 2
+        }
+    }
+};

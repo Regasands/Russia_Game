@@ -8,9 +8,10 @@ import {
     passive_income,
     wait_enimation,
     character,
-    upgrades
+    upgrades,
+    DAY_NIGHT_CYCLE,
 } from "../constants.js";
-
+import { change_boost_character } from "./profit.js";
 
 //  Экспорт,
 export function animation_scale_obj(object, animations_scale, return_animation) {
@@ -25,8 +26,8 @@ export const makeOrnateFrame = (width, height) => {
     add([
         rect(width, height, { radius: 4 }),
         color(20, 20, 10),
-        opacity(0),
-        outline(2, rgb(150, 120, 80)),
+        opacity(0.4),
+        outline(3, rgb(0, 0, 0)),
         pos(0, 0),
         fixed(),
         z(100)
@@ -59,76 +60,83 @@ export function getPassiveIncome(index) {
     if (level > 0) {
         passiveIncome += passive_income.shadow_economy[index].income(level);
     }
-    return passiveIncome;
+    return passiveIncome * character.boost.income;
 
 }
 
-// Тестиирцем смену дня и ночи
-const DAY_NIGHT_CYCLE = {
-    NIGHT: { color: 0x0a0a2a, opacity: 0.9, start: 21, end: 5, z: 50 },
-    DAWN: { color: 0xff7b00, opacity: 0.3, start: 5, end: 7, z: 50 },
-    DAY: { color: 0x000000, opacity: 0, start: 7, end: 18, z: 50 },
-    DUSK: { color: 0x8b0000, opacity: 0.4, start: 18, end: 21, z: 50 }
-};
-
-// В функции mainScene()
-function setupDayNightCycle() {
+// Жесть какая тошг но вроде работает 
+function setupDayNightSystem() {
     let currentOverlay = null;
+    let activeCycle = null;
+    let targetOpacity = 0;
 
-    function createOverlay(cycle) {
-        // Удаляем старый оверлей
-        if (currentOverlay) {
-            destroy(currentOverlay);
-        }
-        
-        // Создаем новый с нужными параметрами
+    // Создаём базовый оверлей один раз
+    function initOverlay() {
         currentOverlay = add([
             rect(width(), height()),
-            color(cycle.color),
-            opacity(cycle.opacity),
+            color(0),
+            opacity(0),
             fixed(),
             z(99),
-            { cycle: cycle.name }
+            "day_night_overlay"
         ]);
+    }
+
+    // Плавное изменение параметров
+    function transitionToCycle(cycle) {
+        if (!currentOverlay) return;
         
-        return currentOverlay;
+        currentOverlay.color = cycle.color;
+        targetOpacity = cycle.opacity;
+        activeCycle = cycle.name;
+    }
+
+    // Определение текущего цикла
+    function getCurrentCycle(hour) {
+        for (const cycle of Object.values(DAY_NIGHT_CYCLE)) {
+            if (cycle.start > cycle.end) { // Для ночи (переход через полночь)
+                if (hour >= cycle.start || hour < cycle.end) return cycle;
+            } else if (hour >= cycle.start && hour < cycle.end) {
+                return cycle;
+            }
+        }
+        return DAY_NIGHT_CYCLE.DAY; 
     }
 
     // Инициализация
-    createOverlay(DAY_NIGHT_CYCLE.DAY);
+    initOverlay();
+    transitionToCycle(DAY_NIGHT_CYCLE.DAY);
 
-    return function updateDayNight(time) {
-        const hour = time % 24;
-        let newCycle = DAY_NIGHT_CYCLE.DAY;
-
-        if (hour >= DAY_NIGHT_CYCLE.NIGHT.start || hour < DAY_NIGHT_CYCLE.NIGHT.end) {
-            newCycle = DAY_NIGHT_CYCLE.NIGHT;
-        } else if (hour >= DAY_NIGHT_CYCLE.DAWN.start && hour < DAY_NIGHT_CYCLE.DAWN.end) {
-            newCycle = DAY_NIGHT_CYCLE.DAWN;
-        } else if (hour >= DAY_NIGHT_CYCLE.DUSK.start && hour < DAY_NIGHT_CYCLE.DUSK.end) {
-            newCycle = DAY_NIGHT_CYCLE.DUSK;
+    // Система плавных переходов
+    loop(0.1, () => {
+        if (currentOverlay && Math.abs(currentOverlay.opacity - targetOpacity) > 0.01) {
+            currentOverlay.opacity = lerp(
+                currentOverlay.opacity,
+                targetOpacity,
+                0.1
+            );
         }
+    });
 
-        if (!currentOverlay || currentOverlay.cycle !== newCycle.name) {
-            createOverlay(newCycle);
-            
-            // Добавляем эффекты
-            if (newCycle === DAY_NIGHT_CYCLE.NIGHT) {
-                // Можно добавить частицы звезд
-            }
+    // Публичный метод обновления
+    return function updateTime(hour) {
+        const normalizedHour = hour % 24;
+        const newCycle = getCurrentCycle(normalizedHour);
+        
+        if (newCycle.name !== activeCycle) {
+            transitionToCycle(newCycle);
         }
     };
 }
-
 
 export function mainScene() {
     scene("main", () => {  // ← Начало callback-функции сцены
 
         // Самое важное музыка
         loadSound('hero_click', 'sounds/game_sounds/Click_mouse_snd.wav')
-        // Загрузка фона
 
 
+        // теперь фон
         loadSprite("background", `../sprites/background/${character.background}.png`, {
             width: WIDTH,
             height: HEIGHT });
@@ -158,10 +166,16 @@ export function mainScene() {
             ]);
         });
 
+        // Загружаем храктеристки персонажа
+        change_boost_character()
+
+        // Считаем пасивный доход
         let dailyPassiveIncome = 0;
         for (let i = 0; i < 5; i ++) {
             dailyPassiveIncome += getPassiveIncome(i);
         }
+
+        
 
 
          // Настройка персонажа 
@@ -173,7 +187,10 @@ export function mainScene() {
             scale(0.4),
             area({ scale: true }),
             anchor("center"),
-            `hero`
+            `hero`,
+            {
+                nooficialname: 'Hero',
+            }
             ])
 
         onClick("hero", () => {
@@ -204,8 +221,8 @@ export function mainScene() {
                 });
             }
             
-            let chance = upgrades.chance_crete.value(character.chance_crete) >= Math.random()
-            let click = upgrades.click_boost.value(character.click_boost)
+            let chance = upgrades.chance_crete.value(character.chance_crete) * character.boost.crete >= Math.random()
+            let click = upgrades.click_boost.value(character.click_boost) * character.boost.click
             if (click - character.energy >= 0) {
                 character.money += character.energy;
                 character.total_earned += character.energy;
@@ -292,22 +309,35 @@ export function mainScene() {
                 }
              });
 
-        }
 
-        const updateDayNight = setupDayNightCycle();
-        let counter_hour = 0
+
+        }
+// Функция обновления масштаба
+        // function updateGlobalScale(object) {
+        //     for (let i = 0; i < object.length; i ++){
+        //         let obj;
+        //         obj = object[i]
+        //         if (obj.nooficialname == 'Hero'){
+        //             obj.scale = 0.2
+        //         }
+        //     }
+        // }
+
+        // onResize(() => {
+        //     const windowWidth = window.innerWidth;
+        //     const windowHeight = window.innerHeight;
+        //     if (windowWidth < 400 || windowHeight < 600) {
+        //         updateGlobalScale(scaleObject)
+        //     }
+        // })
+        // рендер дня и ночи 
+
+        const updateDayNight = setupDayNightSystem();
 
         loop(0.5, () => {
 
             if ( Math.random() >= 0.7 ) {
-                animation_scale_obj(hero, 0.39, 0.4);
-            }
-
-            counter_hour += 0.5;
-            if (counter_hour == 1) {
-                counter_hour = 0;
-                updateDayNight(character.global_time); 
-                character.time_game ++
+                animation_scale_obj(hero, 0.35, 0.4);
             }
 
             stateLabel.text = stateText();
@@ -318,7 +348,7 @@ export function mainScene() {
                 let cost = obj_ch.current_price
                 if (obj_ch.delay == 0){
                     obj_ch.delay = obj.delay
-                    const baseProbability = obj.chance(character.key_bid);
+                    const baseProbability = obj.chance(character.key_bid) + character.boost.luck;
                     const randomValue = Math.random();
                     const isPositiveChange = randomValue < baseProbability;
                     const changeIntensity = 0.05 + Math.random() * 0.1;
@@ -334,13 +364,25 @@ export function mainScene() {
                 }
             }
         });
+        // попрбую изменить маштаб если мобильное устройство 
+
+
+
+
 
         let dayTimer;
+        let secondTimer;
 
+        secondTimer = loop(1, () => {
+            updateDayNight(character.time_game); 
+            character.time_game = (character.time_game + 1) % 24
+
+        })
         wait(4, () => {
+
             dayTimer = loop(23, () => {
-                character.time_game = 0
                 character.days += 1
+                character.time_game = 0
                 character.hungry -= character.hungry_gap
                 character.money += dailyPassiveIncome;
                 character.total_earned += dailyPassiveIncome;
@@ -363,8 +405,13 @@ export function mainScene() {
             });
 
         onSceneLeave(() => {
+
             dayTimer?.cancel(); // Безопасная отмена
+            secondTimer?.cancel();
         });
+
+
+
                 
 
 

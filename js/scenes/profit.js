@@ -5,111 +5,49 @@ import {
     character,
     button_profit,
     upgrades,
-    global_style,
     wait_enimation,
+    heroes_info,
+    character_open_hero,
 } from "../constants.js"
 import { delcard  } from "./passive.js";
 import { makeOrnateFrame, animation_scale_obj } from "./main.js"
+import { create_card_upgrade } from "../card.js";
 
 
-
-function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, type){
-    let current_boost
-    let next_boost
-        if (obj.name == 'chance_crete') {
-            current_boost =  obj.value(level);
-            next_boost = isMaxLevel ? null : obj.value(level + 1);
+export function change_boost_character(){
+    Object.keys(character_open_hero).forEach((key, i) => {
+        if (character_open_hero[key].is_wear) {
+            character.boost[Object.keys(heroes_info[key].effect)[0]] = Object.values(heroes_info[key].effect)[0]
+            console.log(character)
+            return
         }
-        else {
-            current_boost =  Math.round(obj.value(level));
-            next_boost = isMaxLevel ? null : Math.round(obj.value(level + 1));
-        }
-
-        const current_cost = Math.round(obj.cost(level))
-        let card;
-
-        const style = global_style[type]
-
-    // Создаем основу карточки
-        card = add([
-            rect(WIDTH, HEIGHT / 10, { radius: 10 }),
-            area(),
-            pos(x, y),
-            anchor("center"),
-            color(style.color),
-            outline(2, isMaxLevel ? rgb(100, 100, 100) : rgb(0, 0, 0)),
-            opacity(0.6),
-            fixed(),
-            `profit_card_${obj.name}`,
-        ]);
-
-        // Название объекта с иконкой
-
-        card.add([
-            text(`${style.icon} ${obj.name}`, {
-                size: 28,
-                font: "sans-serif",
-                width: WIDTH - 80,
-                align: "center",
-                lineSpacing: 8
-            }),
-            pos(0, -60),
-            anchor("center"),
-            color(style.textColor)
-        ]);
-
-
-        // Остальные элементы с тематическим цветом текста
-        const elements = [
-            {
-                text: `Описание: ${obj.description}`,
-                pos: [-10, -20],
-                size: 18,
-                align: "left"
-            },
-            {
-                text: `Уровень: ${level}${isMaxLevel ? " (MAX)" : ""}`,
-                pos: [244, 30],
-                size: 18,
-                align: "left"
-            },
-            {
-                text: isMaxLevel ? "Макс. уровень достигнут" : `Цена улучшения: ${current_cost}`,
-                pos: [240, 0],
-                size: 18,
-                align: "left"
-            },
-            {
-                text: `Текущий буст: ${current_boost}` + 
-                    (isMaxLevel ? "" : `\nСледующий буст: ${next_boost}`),
-                pos: [-5, 20],
-                size: 18,
-                align: "left"
-            }
-        ];
-
-        elements.forEach(el => {
-            card.add([
-                text(el.text, {
-                    size: el.size,
-                    font: "sans-serif",
-                    width: WIDTH - (el.align === "left" ? 40 : 30),
-                    align: el.align,
-                    lineSpacing: 8
-                }),
-                pos(...el.pos),
-                anchor("center"),
-                color(style.textColor)
-            ]);
-        });
-
-        cardlist.push(card);
-        return card
+    })
 
 }
 
+
+
 export function profitupgradeScene() {
     scene('profit', () => {
+
+
+
+        loadSprite("background", `../sprites/background/${character.background}.png`, {
+            width: WIDTH,
+            height: HEIGHT });
+
+        onLoad(() => {
+            add([
+                sprite("background"),
+                pos(0, 0),
+                opacity(0.65),
+                fixed(),
+                z(-100),
+                scale(0.9)
+            ]);
+        });
+
+
         //загружаем музыку
          loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
         loadSound('buy_button', 'sounds/game_sounds/applepay.mp3')
@@ -262,13 +200,5 @@ export function profitupgradeScene() {
             stateLabel.text = stateText();
         });
 
-
-
-
-
-
-
-
-        
 
     })};
