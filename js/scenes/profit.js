@@ -11,7 +11,7 @@ import {
 } from "../constants.js"
 import { delcard  } from "./passive.js";
 import { makeOrnateFrame, animation_scale_obj } from "./main.js"
-import { create_card_upgrade } from "../card.js";
+import { create_card_hero_background, create_card_upgrade } from "../card.js";
 
 
 export function change_boost_character(){
@@ -30,11 +30,10 @@ export function change_boost_character(){
 export function profitupgradeScene() {
     scene('profit', () => {
 
-
-
-        loadSprite("background", `../sprites/background/${character.background}.png`, {
-            width: WIDTH,
-            height: HEIGHT });
+        // Храним все карты  и запоминаем какоого персонажа показывать сейчас)
+        let cardlist = []
+        let currentIndex_hero = 0
+        let currentIndex_background = 0
 
         onLoad(() => {
             add([
@@ -48,11 +47,6 @@ export function profitupgradeScene() {
         });
 
 
-        //загружаем музыку
-         loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
-        loadSound('buy_button', 'sounds/game_sounds/applepay.mp3')
-        // Храним все карты 
-        let cardlist = []
         // рендер основных полей
         makeOrnateFrame(WIDTH, HEIGHT / 8)
         const stateText = () => {
@@ -112,9 +106,7 @@ export function profitupgradeScene() {
                         level,
                         key
                     ); 
-
                 }
-
 
                 onClick(`profit_card_${obj[key].name}`, (btn) => {
                     level = character[key]
@@ -142,10 +134,8 @@ export function profitupgradeScene() {
 
             });
         }
-        // рендер кнопок + начального поля
+
         render_card(upgrades, 'upgrade')
-        loadSprite("home", "../sprites/button/home.png");
-        loadSprite('block_button', '../sprites/button/block_button.png')
 
         const btn = add([
             pos(BUTTONSIZE, HEIGHT),
@@ -162,11 +152,57 @@ export function profitupgradeScene() {
             go("main");
         });
 
+        // регистрация кнопок перехода)
+        onClick('nav_button', (btn) => {
+            animation_scale_obj(btn, 0.7, 1.3)
+            wait(0.1, () => {
+            let type
+            let target
+            type = btn.type
+            target = btn.target
+            delcard(cardlist)
+            if (target == 'hero'){
+                currentIndex_hero = currentIndex_hero + type
+                if (currentIndex_hero >= Object.keys(heroes_info).length) {
+                    currentIndex_hero = 0
+                } else if (currentIndex_hero < 0){
+                    currentIndex_hero =  Object.keys(heroes_info).length - 1
+                }
+                create_card_hero_background(currentIndex_hero, 'hero', cardlist)
+
+            } else {
+                currentIndex_background = currentIndex_background + type
+                if (currentIndex_background > Object.keys(heroes_info).length) {
+                    currentIndex_background = 0
+                } else if (currentIndex_background < 0){
+                    currentIndex_background =  Object.keys(heroes_info).length - 1
+                }
+                create_card_hero_background(currentIndex_background, 'background', cardlist)
+            }
+
+            })
+
+        })
+
+        onClick('hero_buy_button', (btn) => {
+            animation_scale_obj(btn, 0.9,  1)
+            if (character.diamonds < heroes_info[btn.index].price) {
+                return
+            }
+            wait(0.5, () => {
+                delcard(cardlist)
+                if (btn.type == 'hero'){
+                    character.diamonds -= heroes_info[btn.index].price
+                    character_open_hero[btn.index].is_open = true;
+                    create_card_hero_background(btn.index, 'hero', cardlist)
+                }
+
+            })
+        })
+
 
         // рисууем кнопки перехода 
         for (let i = 1; i < button_profit.length; i++) {
-            loadSprite(button_profit[i], `../sprites/button/profit/${button_profit[i]}.png`);
-            
             const btn = add([
                 pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
                 sprite(button_profit[i]),
@@ -181,21 +217,19 @@ export function profitupgradeScene() {
                 delcard(cardlist)
                 if (button_profit[i] == 'upgrade') {
                     render_card(upgrades, button_profit[i])
+                } else if (button_profit[i] == 'new_character') {
+                    create_card_hero_background(currentIndex_hero, 'hero', cardlist)
+
+
                 }
-            
+
             });
         };
         
-
-
         // ренедрим карты
 
-        
 
 
-
-
-        // циклы игровый loop
         loop(0.5, () => {
             stateLabel.text = stateText();
         });

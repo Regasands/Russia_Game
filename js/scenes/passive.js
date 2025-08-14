@@ -32,10 +32,6 @@ export function delcard(cardlist) {
 export function passiveincomeScene () {
     scene("passive", () => {
 
-        loadSprite("background", `../sprites/background/${character.background}.png`, {
-            width: WIDTH,
-            height: HEIGHT });
-
         onLoad(() => {
             add([
                 sprite("background"),
@@ -46,11 +42,6 @@ export function passiveincomeScene () {
                 scale(0.9)
             ]);
         });
-
-
-        loadSound("ahyou", "sounds/game_sounds/fack_you.mp3");
-        loadSound('upgrade_button', 'sounds/game_sounds/upgrade_button.mp3')
-        loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
 
         // считае пассивный доход
 
@@ -101,10 +92,6 @@ export function passiveincomeScene () {
             z(101)
         ]);
 
-
-        // рендер кнопок
-        loadSprite("home", "../sprites/button/home.png");
-        loadSprite('block_button', '../sprites/button/block_button.png')
 
         const btn = add([
             pos(BUTTONSIZE, HEIGHT),

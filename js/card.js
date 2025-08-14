@@ -2,8 +2,10 @@
 import {
     HEIGHT,
     WIDTH,
+    character_open_hero,
     character_passive,
     global_style,
+    heroes_info,
 } from "./constants.js";
 
 
@@ -286,4 +288,172 @@ export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, typ
         cardlist.push(card);
         return card
 
+}
+
+
+
+export function create_card_hero_background(index, type, cardlist) {
+
+    const obj = heroes_info[index];
+    const is_open = character_open_hero[index].is_open;
+    const text_1 = !is_open ? `Купить за ${obj.price} кристаллов` : 'Надеть';
+    
+
+    // Создаем карточку персонажа
+    const card = add([
+        rect(WIDTH, HEIGHT - 200, { radius: 20 }),
+        pos(WIDTH / 2, HEIGHT / 2),
+        anchor("center"),
+        color(rgb(30, 30, 50)), // Основной цвет карточки
+        opacity(0),
+        z(100),
+        fixed(),
+        state("hidden", ["hidden", "visible"]),
+    ]);
+
+    // Рамка для текстового блока (название + описание + эффекты)
+    const textFrame = card.add([
+        rect(WIDTH - 40, 180, { radius: 12 }), // Размеры рамки
+        pos(0, -220),
+        anchor("center"),
+        color(rgb(50, 50, 80)), // Темно-синий фон рамки
+        outline(4, rgb(255, 160, 122)), // Оранжевая обводка (#FFA07A)
+        z(99),
+        fixed()
+    ]);
+
+    // Имя персонажа в рамке
+    textFrame.add([
+        text(`${obj.name} ${global_style.character_selection.icon}`, {
+            size: 24,
+            font: "bold",
+            styles: {
+                color: rgb(255, 160, 122), // Оранжевый (#FFA07A)
+                outlineColor: rgb(128, 0, 0), // Темно-красный (#800000)
+                outlineWidth: 4,
+            }
+        }),
+        pos(0, -50),
+        anchor("center"),
+        z(101)
+    ]);
+
+    // Описание персонажа
+    textFrame.add([
+        text(obj.description, {
+            size: 20,
+            font: "regular",
+            width: WIDTH - 80,
+            styles: {
+                color: rgb(255, 255, 255),
+                outlineColor: rgb(0, 0, 0),
+                outlineWidth: 2,
+            }
+        }),
+        pos(0, -10),
+        anchor("center"),
+        z(101)
+    ]);
+
+    // Эффекты персонажа
+    const effectsText = Object.entries(obj.effect)
+        .map(([key, value]) => {
+            const effectName = {
+                luck: "🍀 Удача",
+                click: "👆 Сила клика",
+                energy_max: "⚡ Макс. энергия",
+                energy_recovery: "🔄 Восстановление",
+                crete: "💥 Крит. шанс",
+                income: "💰 Доход"
+            }[key] || key;
+            
+            const unit = key === 'luck' ? '%' : 'x';
+            return `${effectName}: +${value}${unit}`;
+        }).join('   '); // Разделитель между эффектами
+
+    textFrame.add([
+        text(effectsText, {
+            size: 20,
+            font: "bold",
+            styles: {
+                color: rgb(200, 255, 200), // Светло-зеленый
+                outlineColor: rgb(0, 80, 0), // Темно-зеленый
+                outlineWidth: 2,
+            }
+        }),
+        pos(0, 40),
+        anchor("center"),
+        z(101)
+    ]);
+
+    const prevBtn = add([
+        sprite("prev_button"),
+        pos(30, HEIGHT / 2),
+        anchor("center"),
+        scale(1.3),
+        area(),
+        z(101),
+        "nav_button",
+        { type: -1, target: type }
+    ]);
+
+    // Кнопка "Вперед"
+    const nextBtn = add([
+        sprite("next_button"),
+        pos(WIDTH - 30, HEIGHT / 2),
+        anchor("center"),
+        scale(1.3),
+        area(),
+        z(101),
+        "nav_button",
+        { type: 1, target: type }
+    ]);
+
+
+
+    // Основная кнопка (Купить/Надеть)
+    const mainBtn = add([
+        rect(400, 60, { radius: 15 }),
+        pos(WIDTH / 2, HEIGHT - 140),
+        anchor("center"),
+        color(rgb(160, 65, 65,)),
+        outline(4, rgb(255, 160, 122)),
+        area(),
+        z(101),
+        fixed(),
+        opacity(1),
+        {
+            index: index,
+            type: type
+        },
+        `${type}${is_open ? "_wear_button" : "_buy_button"}`,
+    ]);
+
+
+    mainBtn.add([
+        text(text_1, {
+            size: 28,
+            font: "bold",
+            styles: {
+                color: rgb(255, 255, 255),
+                outlineColor: rgb(0, 0, 0),
+                outlineWidth: 4,
+                shadowColor: rgb(0, 0, 0, 0.3),
+                shadowOffset: vec2(2, 2)
+            }
+        }),
+        anchor("center"),
+        pos(0, 0) 
+    ]);
+    console.log(`${type}${is_open ? "_wear_button" : "_buy_button"}`,)
+
+
+    let object_vision = add([
+        sprite(`hero_${index}`),
+        pos(WIDTH / 2, HEIGHT / 2 + 40),
+        anchor('center'),
+        scale(obj.scale),
+    ])
+
+    cardlist.push(mainBtn, card, object_vision, nextBtn, prevBtn)
 }

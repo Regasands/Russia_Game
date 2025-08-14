@@ -3,7 +3,6 @@ import {
     WIDTH,
     BUTTONSIZE,
     buttons_game,
-    BUTTON_COUNT,
     character_passive,
     passive_income,
     wait_enimation,
@@ -82,7 +81,7 @@ function setupDayNightSystem() {
         ]);
     }
 
-    // Плавное изменение параметров
+
     function transitionToCycle(cycle) {
         if (!currentOverlay) return;
         
@@ -90,8 +89,6 @@ function setupDayNightSystem() {
         targetOpacity = cycle.opacity;
         activeCycle = cycle.name;
     }
-
-    // Определение текущего цикла
     function getCurrentCycle(hour) {
         for (const cycle of Object.values(DAY_NIGHT_CYCLE)) {
             if (cycle.start > cycle.end) { // Для ночи (переход через полночь)
@@ -103,11 +100,8 @@ function setupDayNightSystem() {
         return DAY_NIGHT_CYCLE.DAY; 
     }
 
-    // Инициализация
     initOverlay();
     transitionToCycle(DAY_NIGHT_CYCLE.DAY);
-
-    // Система плавных переходов
     loop(0.1, () => {
         if (currentOverlay && Math.abs(currentOverlay.opacity - targetOpacity) > 0.01) {
             currentOverlay.opacity = lerp(
@@ -130,32 +124,12 @@ function setupDayNightSystem() {
 }
 
 export function mainScene() {
+
+    // Загружаем храктеристки персонажа 
+    // TODO тут же будет и отрисовка персонажа в идеале
+    change_boost_character()
+
     scene("main", () => {  // ← Начало callback-функции сцены
-
-        // Самое важное музыка
-        loadSound('hero_click', 'sounds/game_sounds/Click_mouse_snd.wav')
-
-
-        // теперь фон
-        loadSprite("background", `../sprites/background/${character.background}.png`, {
-            width: WIDTH,
-            height: HEIGHT });
-
-        loadSprite("coin", "sprites/icon/coin_am.png", {
-            sliceX: 3,  // 3 колонки
-            sliceY: 3,   // 3 строки (даже если 9-й кадр пуст)
-            anims: {
-                "spin": {
-                    // Явно перечисляем нужные 8 кадров:
-                    from: 0,
-                    to: 8,
-                    speed: 12,
-                    loop: true
-                }
-            }
-        });
-
-             
         onLoad(() => {
             add([
                 sprite("background"),
@@ -166,8 +140,6 @@ export function mainScene() {
             ]);
         });
 
-        // Загружаем храктеристки персонажа
-        change_boost_character()
 
         // Считаем пасивный доход
         let dailyPassiveIncome = 0;
@@ -175,15 +147,10 @@ export function mainScene() {
             dailyPassiveIncome += getPassiveIncome(i);
         }
 
-        
-
-
-         // Настройка персонажа 
-        loadSprite("hero", `../sprites/character/${character.id_character}.png`);
 
         const hero = add([
             pos(WIDTH / 2, HEIGHT / 2 + 20),
-            sprite("hero"),
+            sprite("hero_0"),
             scale(0.4),
             area({ scale: true }),
             anchor("center"),
@@ -241,7 +208,6 @@ export function mainScene() {
 
         });
 
-
         // Инициализация
         makeOrnateFrame( WIDTH, HEIGHT / 6.7);
 
@@ -289,8 +255,6 @@ export function mainScene() {
 
         // Отриовка кнопок
         for (let i = 0; i < buttons_game.length; i++) {
-            loadSprite(buttons_game[i], `../sprites/button/main/${buttons_game[i]}.png`);
-            
             const btn = add([
                 pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
                 sprite(buttons_game[i]),
@@ -312,26 +276,8 @@ export function mainScene() {
 
 
         }
-// Функция обновления масштаба
-        // function updateGlobalScale(object) {
-        //     for (let i = 0; i < object.length; i ++){
-        //         let obj;
-        //         obj = object[i]
-        //         if (obj.nooficialname == 'Hero'){
-        //             obj.scale = 0.2
-        //         }
-        //     }
-        // }
 
-        // onResize(() => {
-        //     const windowWidth = window.innerWidth;
-        //     const windowHeight = window.innerHeight;
-        //     if (windowWidth < 400 || windowHeight < 600) {
-        //         updateGlobalScale(scaleObject)
-        //     }
-        // })
         // рендер дня и ночи 
-
         const updateDayNight = setupDayNightSystem();
 
         loop(0.5, () => {
@@ -364,11 +310,6 @@ export function mainScene() {
                 }
             }
         });
-        // попрбую изменить маштаб если мобильное устройство 
-
-
-
-
 
         let dayTimer;
         let secondTimer;
@@ -409,10 +350,6 @@ export function mainScene() {
             dayTimer?.cancel(); // Безопасная отмена
             secondTimer?.cancel();
         });
-
-
-
-                
 
 
     });  // ← Конец callback-функции сцены

@@ -14,7 +14,7 @@ export const wait_enimation = 0.05
 export const character = {
     // Базовые ресурсы
     money: 100,
-    diamonds: 0,
+    diamonds: 300,
     reputation: 0,
     energy: 200, // Репутация в деревне
     time_game: 20,
@@ -366,6 +366,21 @@ export const global_style = {
         icon: "🏚️",        // Амбар
         textColor: "#654321", // Коричневый
         bgGradient: "linear-gradient(135deg, #F5DEB3, #D2B48C)" // Пшеничный → песочный
+
+    },
+    character_selection: {
+        color: "#FFA07A",   // Светло-коралловый (теплый и дружелюбный)
+        icon: "👨‍🌾",        // Фермер
+        textColor: "#800000", // Тёмно-бордовый
+        bgGradient: "linear-gradient(135deg, #FFE4E1, #FFA07A)" // Розовый → коралловый
+    },
+
+    // **Выбор фона (Деревенский пейзаж)**
+    background_selection: {
+        color: "#98FB98",   // Светло-зелёный (природа, поля)
+        icon: "🌄",        // Горы и солнце
+        textColor: "#2E8B57", // Морская зелень
+        bgGradient: "linear-gradient(135deg, #F0FFF0, #98FB98)" // Медовый → светло-зелёный
     }
 };
 
@@ -445,19 +460,21 @@ export const DAY_NIGHT_CYCLE = {
 
 export const heroes_info = {
     0: {
-        id: 0,
+        type: 'hero',
         name: "🥔Работяга ",
         description: "Бустит клики на 2x",
+        scale: 0.3,
         price: 150,
         effect: {
             click: 2
         }
     },
     1: { 
-        id: 1,
+        type: 'hero',
         name: "Сбережливый мальчишка",
         description: "Запас и восстоновление энергии 2x",
         price: 250,
+        scale: 0.3,
         effect: {
             energy_max: 2,
             energy_recovery: 2,
@@ -465,17 +482,19 @@ export const heroes_info = {
         }
     },
     2: {  
-        id: 2,
+        type: 'hero',
         name: "🐝Инвестор от бога",
         description: "Благодаря пчелкам очень везучий парниша",
         price: 600,
+        scale: 0.3,
         effect: {
             luck: 0.15
         }
     },
     3: { 
-        id: 3,
+        type: 'hero',
         name: "Точный  мужик",
+        scale: 0.3,
         description: "Крит шанс 2x",
         price: 300,
         effect: {
@@ -483,8 +502,9 @@ export const heroes_info = {
         }
     },
     4: { 
-        id: 4,
+        type: 'hero',
         name: "🚜 Тракторный Тиран",
+        scale: 0.3,
         description: "Все его бизнесы приносят 2x дохода !",
         price: 1000,
         effect: {
