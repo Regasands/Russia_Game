@@ -10,7 +10,8 @@ import {
     heroes_info,
 } from "./constants.js";
 
-
+// в идеале это конечно все упростить но этим я буду заниматься очень не скоро. вначале хочу сделать основную логику.
+// запустить игру в бета релиз
 // Создание карточек для пасивного дохода сценаи passive 
 export function create_invest_card(obj, x, y, cardlist, index) {
     const style = global_style.investment
@@ -478,4 +479,290 @@ export function create_card_hero_background(index, type, cardlist) {
 
 
     cardlist.push(mainBtn, card, object_vision, nextBtn, prevBtn)
+}
+
+export function create_card_boost_list(boosts, listcard) {
+
+    // Конфигурация дисплея бустов
+    var boostsDisplay = {
+        frame: {
+            width: WIDTH - 20,
+            height: 400,
+            radius: 14,
+            color: rgb(50, 50, 80),
+            outline: { width: 4, color: rgb(255, 160, 122) }
+        },
+        title: {
+            size: 23,
+            color: rgb(255, 215, 0),
+        },
+        boostsList: [
+            { icon: "🍀",  name: "Удача",         key: "luck",             suffix: "%",   transform: (v) => v * 100 },
+            { icon: "🖱️",  name: "Сила клика",    key: "click",            suffix: "x" },
+            { icon: "💥",  name: "Крит. удар",    key: "crete",            suffix: "x" },
+            { icon: "🏭",  name: "Пассив. доход", key: "income",           suffix: "x" },
+            { icon: "🔋",  name: "Макс. энергия", key: "energy_max",       suffix: "x" },
+            { icon: "🔄",  name: "Регенерация",   key: "energy_recovery",  suffix: "x" }
+        ],
+        // Стиль текста
+        textStyle: {
+            size: 20,
+            color: rgb(240, 240, 240),
+            font: "sans-serif"
+        }
+
+        }
+    // 1. Создаем рамку
+    const boostFrame = add([
+        rect(boostsDisplay.frame.width, boostsDisplay.frame.height, { 
+            radius: boostsDisplay.frame.radius 
+        }),
+        pos(WIDTH / 2 , HEIGHT / 2),
+        anchor("center"),
+        color(boostsDisplay.frame.color),
+        outline(boostsDisplay.frame.outline.width, boostsDisplay.frame.outline.color),
+        z(100),
+        opacity(0.3),
+        fixed()
+    ]);
+
+    // 2. Добавляем заголовок
+    boostFrame.add([
+        text("🚀 Активные бусты", {
+            size: boostsDisplay.title.size,
+            color: boostsDisplay.textStyle.color,
+            font: boostsDisplay.textStyle.font
+        }),
+        pos(0, -215),
+        anchor("center")
+    ]);
+
+
+    boostsDisplay.boostsList.forEach((boost, i) => {
+        var yPos = -120 + i * 50;
+        
+        const boostText = boostFrame.add([
+            text(`${boost.icon} ${boost.name}: ${boosts[boost.key]}${boost.suffix}`, {
+                size: boostsDisplay.textStyle.size,
+                color: boostsDisplay.textStyle.color,
+                font: boostsDisplay.textStyle.font
+            }),
+            pos(0, yPos),
+            anchor("center"),
+            { boostKey: boost.key } // Сохраняем ключ для обновления
+        ]);
+        
+    });
+
+    listcard.push(boostFrame)
+
+
+
+}
+
+
+export function create_exchanger_card(cardlist, cost) {
+    const style = {
+        card: {
+            color: rgb(94, 75, 50),             // Основной цвет - тёмное дерево
+            outline: rgb(60, 45, 30),            // Края как старая доска
+            opacity: 0.98,
+            texture: "wood_rough",               // (опционально) имя текстуры
+            noise: 0.1                           // Лёгкий "грязный" эффект
+        },
+        text: {
+            color: rgb(240, 230, 210),           // Цвет пожелтевшей бумаги
+            size: 22,
+            font: "Georgia",                      // Классический шрифт
+            titleSize: 26,
+            titleColor: rgb(220, 180, 100)        // Цвет старого золота
+        },
+        buttons: {
+            buy: {
+                color: rgb(110, 85, 50),         // Коричневый как мешковина
+                outline: rgb(80, 60, 35),
+                hoverColor: rgb(130, 100, 60),
+                texture: "fabric"                // Текстура мешковины
+            },
+            sell: {
+                color: rgb(120, 70, 40),         // Ржаво-коричневый
+                outline: rgb(90, 50, 30),
+                hoverColor: rgb(140, 80, 50),
+                texture: "metal_rust"             // Текстура ржавого металла
+            },
+            textColor: rgb(240, 230, 210),        // Как основной текст
+            radius: 6                             // Лёгкое скругление
+        },
+        // Эффекты старины
+        effects: {
+            paperStains: true,                    // Пятна на "бумаге"
+            nailHoles: 3                          // Количество "гвоздей" в углах
+        }
+    };
+
+    let card = add([
+        rect(WIDTH, HEIGHT / 10, { radius: 12 }),
+        area(),
+        pos(WIDTH / 2, HEIGHT / 2),
+        z(100),
+        anchor("center"),
+        color(style.card.color),
+        outline(2, style.card.outline),
+        opacity(style.card.opacity),
+        fixed(),
+    ]);
+
+    let data = {
+        size: style.text.size,
+        font: style.text.font,
+        align: 'left',
+        lineSpacing: 8
+    }
+
+    // Заголовок с неоновым акцентом
+    card.add([
+        text("💎 Обменник алмазов", { ...data, size: style.text.titleSize }),
+        pos(0, -50),
+        anchor('center'),
+        color(style.text.titleColor)
+    ])
+
+    // Описание
+    card.add([
+        text("Покупайте и продавайте алмазы по курсу", data),
+        pos(0, -20),
+        color(style.text.color),
+        anchor('center'),
+    ])
+
+    // Цена с иконкой
+    card.add([
+        text(`💰 Текущая цена: ${cost}`, data),
+        pos(0, 10),
+        color(style.text.titleColor),
+        anchor('center'),
+    ])
+
+    const buyBtn = card.add([
+        rect(120, 35, { radius: 6 }),
+        pos(-150, 45),
+        anchor("center"),
+        area(),
+        z(999),
+        color(rgb(110, 85, 60)),    
+        outline(2, rgb(80, 60, 40)), 
+        `buy_diamond`,
+        { 
+            last_time: time(),
+        }
+        ])
+
+    buyBtn.add([
+        text('Купить', data),
+        color(style.textColor),
+        pos(-30, -10)
+    ])
+
+    const sellBtn = card.add([
+        rect(120, 35, { radius: 6 }),
+        pos(150, 45),
+        z(999),
+        anchor("center"),
+        area(),
+        color(rgb(120, 70, 50)),    
+        outline(2, rgb(90, 50, 40)),
+        `sell_diamond`,
+        { 
+            last_time: time(),
+        }
+    ])
+    sellBtn.add([
+        text('Продать', data),
+        color(style.textColor),
+        pos(-40, -10)
+    ])
+    cardlist.push(card)
+
+}
+
+
+export function create_boost_card(boostData, index, count, posX, posY, card_list) {
+    const style = global_style.energy_recovery
+    const card = add([
+        rect(WIDTH - 10, 80, { radius: 12 }),
+        area(),
+        pos(posX, posY),
+        anchor("center"),
+        color(style.color),
+        outline(2, rgb(0, 0, 0)),
+        opacity(0.6),
+        z(100),
+        fixed(),
+        {
+                index: index
+        },
+        'button_boost_buy'
+    ]);
+
+
+    // Заголовок с иконкой
+    card.add([
+        text(`${boostData.name}`, {
+            size: 24,
+            font: "sans-serif",
+            width: WIDTH - 80,
+            align: "center",
+            lineSpacing: 8
+        }),
+        color(style.textColor),
+        pos(0, -60),
+        anchor("center"),
+        z(2)
+    ]);
+
+    // Описание
+    card.add([
+        text(boostData.description, {
+                size: 20,
+                font: "sans-serif",
+                width: WIDTH - 80,
+                align: "center",
+                lineSpacing: 8
+            }),
+        color(style.textColor),
+        pos(0, -15),
+        anchor("center"),
+        z(2)
+    ]);
+
+    // Время действия и цена
+    card.add([
+        text(`⏱️ ${boostData.time}сек / 💰 ${boostData.cost}`, {
+                size: 20,
+                font: "sans-serif",
+                width: WIDTH - 80,
+                align: "center",
+                lineSpacing: 8
+            }),
+
+        pos(100, 25),
+        anchor("center"),
+        z(2)
+    ]);
+
+    card.add([
+        text(`У вас есть: ${count}`, {
+                size: 20,
+                font: "sans-serif",
+                width: WIDTH - 80,
+                align: "center",
+                lineSpacing: 8
+            }),
+        color(style.textColor),
+        pos(-150, 25),
+        anchor("center"),
+        z(2)
+    ]);
+
+    card_list.push(card)
 }

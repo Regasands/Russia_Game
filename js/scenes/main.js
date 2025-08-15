@@ -280,7 +280,7 @@ export function mainScene() {
 
             return `
             💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}/день    
-            ❤️ ${hp}/100     🍗 ${hungry}%    🔋 ${energy}/${upgrades.energy_max.value(character.energy_max) * character.boost.energy_max}
+            🍗 ${hungry}%    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max)}
               📅 ${days}                                   ⏳ ${time_game}:00
             `.replace(/\n\s+/g, '\n').trim();
         };
@@ -292,7 +292,6 @@ export function mainScene() {
                 styles: {
                     "💰": { color: rgb(255, 215, 0) },      // Золотой
                     "💎": { color: rgb(0, 191, 255) },      // Голубой
-                    "❤️": { color: rgb(255, 69, 58) },      // Красный
                     "🍗": { color: rgb(255, 149, 0) },      // Оранжевый
                     "📊": { color: rgb(175, 82, 222) },     // Фиолетовый
                     "🔋": { color: rgb(52, 199, 89) },      // Салатовый
@@ -326,6 +325,8 @@ export function mainScene() {
                     go('passive')
                 } else if (buttons_game[i] == 'profit') {
                     go('profit')
+                } else if (buttons_game[i] == 'update') {
+                    go('update_state')
                 }
              });
 
@@ -377,7 +378,6 @@ export function mainScene() {
             dayTimer = loop(23, () => {
                 character.days += 1
                 character.time_game = 0
-                character.hungry -= character.hungry_gap
                 character.money += dailyPassiveIncome;
                 character.total_earned += dailyPassiveIncome;
 

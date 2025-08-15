@@ -12,8 +12,8 @@ import {
     character_open_background,
 } from "../constants.js"
 import { delcard  } from "./passive.js";
-import { makeOrnateFrame, animation_scale_obj } from "./main.js"
-import { create_card_hero_background, create_card_upgrade } from "../card.js";
+import { makeOrnateFrame, animation_scale_obj, change_boost_character } from "./main.js"
+import { create_card_boost_list, create_card_hero_background, create_card_upgrade, create_exchanger_card } from "../card.js";
 
 
 
@@ -228,6 +228,64 @@ export function profitupgradeScene() {
 
         })
 
+    let click = 1
+    let sell_click = 1
+
+    onClick(`sell_diamond`, (btn) => {
+        animation_scale_obj(btn, 0.9, 1)
+        if (
+            (sell_click > 1 && character.diamonds - (sell_click * 2) >= 0) ||
+            (sell_click === 1 && character.diamonds - sell_click >= 0)
+        ) {
+            if ((time() - btn.last_time < 1) && 
+                (character.diamonds - (sell_click * 2) >= 0)
+            )
+                {
+                sell_click  *= 2
+            } else {
+                sell_click = 1
+            }
+
+            btn.last_time = time()
+            character.diamonds -= sell_click;
+            character.money += character.cost_diamond * sell_click
+            delcard(cardlist)
+            wait(wait_enimation - 0.04, () => {
+                create_exchanger_card(cardlist, character.cost_diamond);
+            })
+        } else {
+            sell_click = 1
+        }
+    })
+
+    onClick(`buy_diamond`, (btn) => {
+        animation_scale_obj(btn, 0.9, 1)
+        if (
+            (character.money >=  (click * 2) * character.cost_diamond) ||
+            (click == 1 && character.money >= character.cost_diamond)
+        )
+            {
+            if  (
+                (time() - btn.last_time < 1) &&
+                (character.money >=  (click * 2) * character.cost_diamond)
+            ){
+                click  *= 2
+            } else {
+                click = 1
+            }
+            btn.last_time = time()
+
+            character.diamonds += click;
+            character.money -= character.cost_diamond * click;
+            delcard(cardlist)
+            wait(wait_enimation - 0.04, () => {
+                create_exchanger_card(cardlist, character.cost_diamond);
+            })
+        } else {
+            click = 1
+        }
+    })
+
 
         // рисууем кнопки перехода 
         for (let i = 1; i < button_profit.length; i++) {
@@ -249,6 +307,11 @@ export function profitupgradeScene() {
                     create_card_hero_background(currentIndex_hero, 'hero', cardlist)
                 } else if (button_profit[i] == 'new_background') {
                     create_card_hero_background(currentIndex_background, 'background', cardlist)
+                } else if (button_profit[i] == 'new_event') {
+                    change_boost_character()
+                    create_card_boost_list(character.boost, cardlist)
+                } else if (button_profit[i] == 'exchanger') {
+                    create_exchanger_card(cardlist, character.cost_diamond)
                 }
 
             });

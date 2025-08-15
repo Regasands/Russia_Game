@@ -14,10 +14,11 @@ export const wait_enimation = 0.05
 export const character = {
     // Базовые ресурсы
     money: 100,
-    diamonds: 100,
+    diamonds: 1000,
     reputation: 0,
     energy: 200, // Репутация в деревне
     time_game: 20,
+    cost_diamond: 100,
 
 
     // прокачиваемые  значения 
@@ -27,9 +28,9 @@ export const character = {
     energy_recovery: 0,
 
 
+    // временные баффы
 
     hungry_gap: 10,
-    hp_gap: 10,
 
     
     // Прогресс
@@ -46,12 +47,6 @@ export const character = {
         energy_recovery: 1,
     },
     
-
-    // Характеристики
-    hp: 100,
-    luck: 0,
-
-
 
     id_character: 0,
     id_background: 0,
@@ -175,8 +170,23 @@ export const character_open_background = {
         is_open: false,
         is_wear: false,
     }
-
 }
+
+export const character_boost = {
+    0 : {
+        time_start: 0,
+        count: 0
+     },
+    1 : {
+        time_start: 0,
+        count: 0
+     },
+    2 : {
+        time_start: 0,
+        count: 0
+     },
+}
+
 
 // система инвестицый для пассивного дохода
 
@@ -603,3 +613,33 @@ export const backgrounds_info = {
         }
     }
 };
+
+export const time_boost = {
+    0: {
+        name: "⚡ Турбо-клики",
+        description: "клики дают 10x монет",
+        time: 30,
+        cost: 10,
+        effect: {
+            click: 10
+        }
+    },
+    1: {
+        name: "💥 Критический разгром",
+        description: "10 x сила крита",
+        time: 5, 
+        cost: 15,
+        effect: {
+            crete: 10,
+        }
+    },
+    2: {
+        name: "🔋 Энерджайзер",
+        description: "восстановление энергии + ускоренная регенерация",
+        time: 45,
+        cost: 20,
+        effect: {
+            energy_recovery: 10
+        }
+    }
+}

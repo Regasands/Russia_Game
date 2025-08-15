@@ -3,6 +3,7 @@ import { passiveincomeScene } from './scenes/passive.js';
 import { WIDTH, HEIGHT } from './constants.js';
 import { profitupgradeScene } from './scenes/profit.js';
 import { character, buttons_game, button_profit, button_passive } from './constants.js';
+import { updatestateScene } from './scenes/update.js';
 
 const k = kaboom({
     width: WIDTH,
@@ -117,6 +118,7 @@ const track1 = play("bg2", {
 // Регистрация сцен
 passiveincomeScene();
 profitupgradeScene();
+updatestateScene();
 mainScene();
 go("main");
 
