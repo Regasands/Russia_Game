@@ -13,8 +13,8 @@ export const wait_enimation = 0.05
 
 export const character = {
     // Базовые ресурсы
-    money: 10000,
-    diamonds: 30000,
+    money: 100,
+    diamonds: 100,
     reputation: 0,
     energy: 200, // Репутация в деревне
     time_game: 20,
@@ -54,7 +54,7 @@ export const character = {
 
 
     id_character: 0,
-    background: 0,
+    id_background: 0,
     id_user: 0,
     name: "Новичок", // Имя персонажа
     
@@ -150,6 +150,33 @@ export const character_open_hero = {
     }
 };
 
+export const character_open_background = {
+    0: {
+        is_open: true,
+        is_wear: true,
+    },
+    1: {
+        is_open: false,
+        is_wear: false,
+    },
+    2: {
+        is_open: false,
+        is_wear: false,
+    },
+    3: {
+        is_open: false,
+        is_wear: false,
+    },
+    4: {
+        is_open: false,
+        is_wear: false,
+    },
+    5: {
+        is_open: false,
+        is_wear: false,
+    }
+
+}
 
 // система инвестицый для пассивного дохода
 
@@ -393,7 +420,7 @@ export const upgrades = {
         description: "Резко увеличивает количество кликов!",
         level: 0,
         maxLevel: 15,
-        cost: (level) => Math.round(100 + 10 * Math.pow(2.3, level)), 
+        cost: (level) => Math.round(400 + 10 * Math.pow(2.4, level)), 
         value: (level) => Math.round(Math.pow(1.6, level)), 
     },
 
@@ -403,7 +430,7 @@ export const upgrades = {
         description: "Сделай x5 клик, без потери энергии! ",
         level: 0,
         maxLevel: 15,
-        cost: (level) => Math.round(200 + 80 * Math.pow(1.7, level)), // 80, 136, 231...
+        cost: (level) => Math.round(200 + 100 * Math.pow(1.7, level)), // 80, 136, 231...
         value: (level) => 0.05 + level * 0.03, // 5%, 8%... (50% на 15 ур.)
     },
 
@@ -413,8 +440,8 @@ export const upgrades = {
         description: "Увеличивае буст энергии",
         level: 0,
         maxLevel: 15,
-        cost: (level) => Math.round(120 * Math.pow(1.9, level)), // 120, 192, 307...
-        value: (level) => Math.round(20 + Math.pow(2, level))
+        cost: (level) => Math.round(300 * Math.pow(1.9, level)), // 120, 192, 307...
+        value: (level) => Math.round(50 + Math.pow(2, level))
     },
     // Вместимость амбара (x10)
     energy_max: {
@@ -422,7 +449,7 @@ export const upgrades = {
         description: "Увеиличивает максимальную энергию ",
         level: 0,
         maxLevel: 10,
-        cost: (level) => Math.round(150 * Math.pow(2.3, level)), // 150, 225, 338...
+        cost: (level) => Math.round(400 * Math.pow(2.3, level)), // 150, 225, 338...
         value: (level) => Math.round(199 + Math.pow(1.5, level * 3.3)), // +1000, +1500... (+8500 на 15 ур.)
     }
 };
@@ -464,7 +491,7 @@ export const heroes_info = {
         type: 'hero',
         name: "🥔Работяга ",
         description: "Бустит клики на 2x",
-        scale: 0.3,
+        scale: 0.33,
         price: 150,
         effect: {
             click: 2
@@ -487,7 +514,7 @@ export const heroes_info = {
         name: "🐝Инвестор от бога",
         description: "Благодаря пчелкам очень везучий парниша",
         price: 600,
-        scale: 0.3,
+        scale: 0.33,
         effect: {
             luck: 0.15
         }
@@ -495,7 +522,7 @@ export const heroes_info = {
     3: { 
         type: 'hero',
         name: "Точный  мужик",
-        scale: 0.3,
+        scale: 0.33,
         description: "Крит шанс 2x",
         price: 300,
         effect: {
@@ -510,6 +537,69 @@ export const heroes_info = {
         price: 1000,
         effect: {
             income: 2
+        }
+    }
+};
+
+export const backgrounds_info = {
+    0: {
+        type: 'background',
+        name: "🌾 Деревенское поле",
+        description: "Простое поле с золотистыми колосьями. +10% к пассивному доходу доходу",
+        scale: 0.25,
+        price: 200,
+        effect: {
+            income: 1.1
+        }
+    },
+    1: {
+        type: 'background',
+        name: "🏡 Уютная ферма",
+        description: "Маленький домик с огородом. Восстанавливает +1 энергию в минуту",
+        price: 350,
+            scale: 0.2,
+        effect: {
+            energy_recovery: 1
+        }
+    },
+    2: {
+        type: 'background',
+        name: "🌻 Подсолнуховый рай",
+        description: "Яркие подсолнухи тянутся к солнцу. +15% к удаче",
+        scale: 0.2,
+        price: 500,
+        effect: {
+            luck: 0.15
+        }
+    },
+    3: {
+        type: 'background',
+        name: "🌧️ Дождливый пейзаж",
+        description: "Теплый летний дождь поливает crops. Больше в 1.5x кликов за раз ",
+        scale: 0.2,
+        price: 450,
+        effect: {
+            click: 1.2
+        }
+    },
+    4: {
+        type: 'background',
+        name: "🌄 Горная ферма",
+        description: "Ферма на склоне горы с потрясающим видом. +25% к максимальной энергии",
+            scale: 0.2,
+        price: 600,
+        effect: {
+            energy_max: 1.25
+        }
+    },
+    5: {
+        type: 'background',
+        name: "🏭 Индустриальная зона",
+        description: "Современные фермерские технологии. Все бусты эффективнее на 10%",
+        scale: 0.2,
+        price: 800,
+        effect: {
+            all_effects: 1.1
         }
     }
 };

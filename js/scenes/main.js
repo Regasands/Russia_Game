@@ -10,7 +10,9 @@ import {
     upgrades,
     DAY_NIGHT_CYCLE,
     heroes_info,
-    character_open_hero
+    character_open_hero,
+    character_open_background,
+    backgrounds_info
 } from "../constants.js";
 
 //  Экспорт,
@@ -141,7 +143,30 @@ export function change_boost_character(){
                 boost[key2] = heroes_info[key].effect[key2]
             })
             character.boost = boost
-            console.log(character)
+        }
+    })
+    Object.keys(character_open_background).forEach((key) => {
+        if (character_open_background[key].is_wear) {
+            Object.keys(backgrounds_info[key].effect).forEach((key2) => {
+                if (key == 'all_effects'){
+                    Object.keys(boost).forEach((key3) => {
+                        if (key3 == 'luck') {
+                            boost[key3] += backgrounds_info[key].effect[key2]
+                        } else {
+                            boost[key3] *= backgrounds_info[key].effect[key2]
+                        }
+                    });
+                } else {
+
+                    if (key2 == 'luck') {
+                        boost[key2] += backgrounds_info[key].effect[key2]
+                    } else {
+                        boost[key2] *= backgrounds_info[key].effect[key2]
+                    }
+                }
+            })
+            character.boost = boost
+            console.log(character.boost)
             return
         }
     })
@@ -158,11 +183,12 @@ export function mainScene() {
 
         onLoad(() => {
             add([
-                sprite("background"),
-                pos(0, 0),
+                sprite(`background_${character.id_background}`),
+                anchor('center'),
+                pos(WIDTH / 2, HEIGHT / 2),
                 fixed(),
                 z(-100),
-                scale(0.9)
+                scale(0.7),
             ]);
                         // Загружаем храктеристки персонажа 
             // TODO тут же будет и отрисовка персонажа в идеале

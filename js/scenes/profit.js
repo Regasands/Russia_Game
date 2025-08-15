@@ -8,6 +8,8 @@ import {
     wait_enimation,
     heroes_info,
     character_open_hero,
+    backgrounds_info,
+    character_open_background,
 } from "../constants.js"
 import { delcard  } from "./passive.js";
 import { makeOrnateFrame, animation_scale_obj } from "./main.js"
@@ -49,7 +51,7 @@ export function profitupgradeScene() {
             const energy = Math.min(Number(character.energy), upgrades.energy_max.value(character.energy_max));
 
             return `
-            💰 ${money}                💎 ${diamonds}             🔋 ${energy}/${upgrades.energy_max.value(character.energy_max)}
+            💰 ${money}                         💎 ${diamonds}
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -62,7 +64,6 @@ export function profitupgradeScene() {
                     "💎": { color: rgb(0, 191, 255) },
                     "❤️": { color: rgb(255, 69, 58) },
                     "🍗": { color: rgb(255, 149, 0) },
-                    "🔋": { color: rgb(52, 199, 89) }
                 },
                 width: width() - 40, 
                 lineSpacing: 20  
@@ -163,7 +164,7 @@ export function profitupgradeScene() {
 
             } else {
                 currentIndex_background = currentIndex_background + type
-                if (currentIndex_background > Object.keys(heroes_info).length) {
+                if (currentIndex_background >= Object.keys(heroes_info).length) {
                     currentIndex_background = 0
                 } else if (currentIndex_background < 0){
                     currentIndex_background =  Object.keys(heroes_info).length - 1
@@ -177,7 +178,10 @@ export function profitupgradeScene() {
 
         onClick('buy_button', (btn) => {
             animation_scale_obj(btn, 0.9,  1)
-            if (character.diamonds < heroes_info[btn.index].price) {
+            if (character.diamonds < heroes_info[btn.index].price && btn.type == 'hero') {
+                return
+            }
+            if (character.diamonds < backgrounds_info[btn.index].price && btn.type == 'background') {
                 return
             }
             wait(0.1, () => {
@@ -186,14 +190,29 @@ export function profitupgradeScene() {
                     character.diamonds -= heroes_info[btn.index].price
                     character_open_hero[btn.index].is_open = true;
                     create_card_hero_background(btn.index, 'hero', cardlist)
+                } else {
+                    character.diamonds -= backgrounds_info[btn.index].price
+                    character_open_background[btn.index].is_open = true;
+                    create_card_hero_background(btn.index, 'background', cardlist)}
                 }
-
-            })
+            
+            )
         })
         onClick('wear_button', (btn) => {
             animation_scale_obj(btn, 0.9, 1)
             wait(0.1, () => {
-                if (btn.type == 'hero'){
+                if (btn.type == 'background'){
+                    var index = btn.index
+                    if (character_open_background[index].is_open && !character_open_background[index].is_wear) {
+                        for (const [key, value] of Object.entries(character_open_hero)) {
+                            character_open_background[key].is_wear = false
+                        }
+                        character_open_background[index].is_wear = true
+                        character.id_background = index
+                        delcard(cardlist)
+                        create_card_hero_background(btn.index, 'background', cardlist)
+                    }
+                } else {
                     var index = btn.index
                     if (character_open_hero[index].is_open && !character_open_hero[index].is_wear) {
                         for (const [key, value] of Object.entries(character_open_hero)) {
@@ -228,8 +247,8 @@ export function profitupgradeScene() {
                     render_card(upgrades, button_profit[i])
                 } else if (button_profit[i] == 'new_character') {
                     create_card_hero_background(currentIndex_hero, 'hero', cardlist)
-
-
+                } else if (button_profit[i] == 'new_background') {
+                    create_card_hero_background(currentIndex_background, 'background', cardlist)
                 }
 
             });

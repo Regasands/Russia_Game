@@ -2,6 +2,8 @@
 import {
     HEIGHT,
     WIDTH,
+    backgrounds_info,
+    character_open_background,
     character_open_hero,
     character_passive,
     global_style,
@@ -293,10 +295,21 @@ export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, typ
 
 
 export function create_card_hero_background(index, type, cardlist) {
+    let obj
+    let is_open
+    let is_wear
 
-    const obj = heroes_info[index];
-    const is_open = character_open_hero[index].is_open;
-    const is_wear = character_open_hero[index].is_wear
+    if (type == 'hero') {
+        obj = heroes_info[index]; 
+        is_open = character_open_hero[index].is_open;
+        is_wear = character_open_hero[index].is_wear;
+    } else {
+        obj = backgrounds_info[index]; 
+        is_open = character_open_background[index].is_open;
+        is_wear = character_open_background[index].is_wear
+    };
+
+
     const text_1 = !is_open ? `Купить за ${obj.price} кристаллов` : !is_wear ? 'Надеть': 'Уже используется';
 
     
@@ -315,8 +328,8 @@ export function create_card_hero_background(index, type, cardlist) {
 
     // Рамка для текстового блока (название + описание + эффекты)
     const textFrame = card.add([
-        rect(WIDTH - 40, 180, { radius: 12 }), // Размеры рамки
-        pos(0, -220),
+        rect(WIDTH - 40, 150, { radius: 12 }), // Размеры рамки
+        pos(0, -210),
         anchor("center"),
         color(rgb(50, 50, 80)), // Темно-синий фон рамки
         outline(4, rgb(255, 160, 122)), // Оранжевая обводка (#FFA07A)
@@ -445,13 +458,24 @@ export function create_card_hero_background(index, type, cardlist) {
         anchor("center"),
         pos(0, 0) 
     ]);
+    let object_vision;
+    if (type == 'hero') {
+        object_vision = add([
+            sprite(`hero_${index}`),
+            pos(WIDTH / 2, HEIGHT / 2 + 40),
+            anchor('center'),
+            scale(obj.scale),
+        ]) 
+    } else {
+        object_vision = add([
+            sprite(`background_${index}`),
+            pos(WIDTH / 2, HEIGHT / 2 + 40),
+            anchor('center'),
+            scale(obj.scale),
+        ]) 
+        console.log('r')
+    }
 
-    let object_vision = add([
-        sprite(`hero_${index}`),
-        pos(WIDTH / 2, HEIGHT / 2 + 40),
-        anchor('center'),
-        scale(obj.scale),
-    ])
 
     cardlist.push(mainBtn, card, object_vision, nextBtn, prevBtn)
 }

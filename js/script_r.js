@@ -12,10 +12,9 @@ const k = kaboom({
 });
 
 
-// Загрузка   фонов 
-loadSprite("background", `../sprites/background/${character.background}.png`, {
-        width: WIDTH,
-        height: HEIGHT });
+
+//  Загрузка для главнойц страрницы
+
 
 
 loadSprite("background_profit", `../sprites/background/profit.png`, {
@@ -33,6 +32,13 @@ for (let i = 0; i < 5; i ++) {
     loadSprite(`hero_${i}`, `../sprites/character/${i}.png`);
 
 }
+// Загрузка   фонов 
+for (let i = 0; i < 6; i++) {
+    loadSprite(`background_${i}`, `../sprites/background/${i}.png`, {
+            width: WIDTH,
+            height: HEIGHT });
+}
+
 
         
 //  Загрузка для главнойц страрницы
