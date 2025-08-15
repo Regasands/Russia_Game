@@ -34,12 +34,13 @@ export function passiveincomeScene () {
 
         onLoad(() => {
             add([
-                sprite("background"),
-                pos(0, 0),
-                opacity(0.65),
+                sprite("background_passive"),
+                pos(WIDTH / 2, HEIGHT / 2),
+                opacity(1),
+                anchor('center'),
                 fixed(),
                 z(-100),
-                scale(0.9)
+                scale(0.5)
             ]);
         });
 

@@ -296,7 +296,9 @@ export function create_card_hero_background(index, type, cardlist) {
 
     const obj = heroes_info[index];
     const is_open = character_open_hero[index].is_open;
-    const text_1 = !is_open ? `Купить за ${obj.price} кристаллов` : 'Надеть';
+    const is_wear = character_open_hero[index].is_wear
+    const text_1 = !is_open ? `Купить за ${obj.price} кристаллов` : !is_wear ? 'Надеть': 'Уже используется';
+
     
 
     // Создаем карточку персонажа
@@ -409,8 +411,6 @@ export function create_card_hero_background(index, type, cardlist) {
         { type: 1, target: type }
     ]);
 
-
-
     // Основная кнопка (Купить/Надеть)
     const mainBtn = add([
         rect(400, 60, { radius: 15 }),
@@ -426,7 +426,7 @@ export function create_card_hero_background(index, type, cardlist) {
             index: index,
             type: type
         },
-        `${type}${is_open ? "_wear_button" : "_buy_button"}`,
+        is_open ? "wear_button" : "buy_button",
     ]);
 
 
@@ -445,8 +445,6 @@ export function create_card_hero_background(index, type, cardlist) {
         anchor("center"),
         pos(0, 0) 
     ]);
-    console.log(`${type}${is_open ? "_wear_button" : "_buy_button"}`,)
-
 
     let object_vision = add([
         sprite(`hero_${index}`),

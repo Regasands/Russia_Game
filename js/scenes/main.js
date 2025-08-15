@@ -9,8 +9,9 @@ import {
     character,
     upgrades,
     DAY_NIGHT_CYCLE,
+    heroes_info,
+    character_open_hero
 } from "../constants.js";
-import { change_boost_character } from "./profit.js";
 
 //  Экспорт,
 export function animation_scale_obj(object, animations_scale, return_animation) {
@@ -123,13 +124,38 @@ function setupDayNightSystem() {
     };
 }
 
+
+// Так надо сделать функцию которая считает бусты
+export function change_boost_character(){
+    var boost = {
+        luck: 0,
+        click: 1,
+        crete: 1,
+        income: 1,
+        energy_max: 1,
+        energy_recovery: 1,
+    }
+    Object.keys(character_open_hero).forEach((key) => {
+        if (character_open_hero[key].is_wear) {
+            Object.keys(heroes_info[key].effect).forEach((key2) => {
+                boost[key2] = heroes_info[key].effect[key2]
+            })
+            character.boost = boost
+            console.log(character)
+            return
+        }
+    })
+
+};
+
+    
+
 export function mainScene() {
 
-    // Загружаем храктеристки персонажа 
-    // TODO тут же будет и отрисовка персонажа в идеале
-    change_boost_character()
+
 
     scene("main", () => {  // ← Начало callback-функции сцены
+
         onLoad(() => {
             add([
                 sprite("background"),
@@ -138,6 +164,20 @@ export function mainScene() {
                 z(-100),
                 scale(0.9)
             ]);
+                        // Загружаем храктеристки персонажа 
+            // TODO тут же будет и отрисовка персонажа в идеале
+            change_boost_character()
+            var hero = add([
+                pos(WIDTH / 2, HEIGHT / 2 + 20),
+                sprite(`hero_${character.id_character}`),
+                scale(0.4),
+                area({ scale: true }),
+                anchor("center"),
+                `hero`,
+                {
+                    nooficialname: 'Hero',
+                }
+                ])
         });
 
 
@@ -148,19 +188,9 @@ export function mainScene() {
         }
 
 
-        const hero = add([
-            pos(WIDTH / 2, HEIGHT / 2 + 20),
-            sprite("hero_0"),
-            scale(0.4),
-            area({ scale: true }),
-            anchor("center"),
-            `hero`,
-            {
-                nooficialname: 'Hero',
-            }
-            ])
 
-        onClick("hero", () => {
+
+        onClick("hero", (hero) => {
             play('hero_click', {volume: 0.09, speed: 1.3})
             animation_scale_obj(hero, 0.35, 0.4)
             if (character.energy == 0) {
@@ -224,7 +254,7 @@ export function mainScene() {
 
             return `
             💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}/день    
-            ❤️ ${hp}/100     🍗 ${hungry}%    🔋 ${energy}/${upgrades.energy_max.value(character.energy_max)}
+            ❤️ ${hp}/100     🍗 ${hungry}%    🔋 ${energy}/${upgrades.energy_max.value(character.energy_max) * character.boost.energy_max}
               📅 ${days}                                   ⏳ ${time_game}:00
             `.replace(/\n\s+/g, '\n').trim();
         };
@@ -282,9 +312,6 @@ export function mainScene() {
 
         loop(0.5, () => {
 
-            if ( Math.random() >= 0.7 ) {
-                animation_scale_obj(hero, 0.35, 0.4);
-            }
 
             stateLabel.text = stateText();
 
@@ -333,8 +360,8 @@ export function mainScene() {
                 character.hp -= character.hp_gap;
             }
 
-            character.energy += upgrades.energy_recovery.value(character.energy_recovery);
-            character.energy = Math.min(upgrades.energy_max.value(character.energy_max), character.energy);
+            character.energy += upgrades.energy_recovery.value(character.energy_recovery) * character.boost.energy_recovery;
+            character.energy = Math.min(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max, character.energy);
 
 
 

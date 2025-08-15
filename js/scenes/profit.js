@@ -14,16 +14,6 @@ import { makeOrnateFrame, animation_scale_obj } from "./main.js"
 import { create_card_hero_background, create_card_upgrade } from "../card.js";
 
 
-export function change_boost_character(){
-    Object.keys(character_open_hero).forEach((key, i) => {
-        if (character_open_hero[key].is_wear) {
-            character.boost[Object.keys(heroes_info[key].effect)[0]] = Object.values(heroes_info[key].effect)[0]
-            console.log(character)
-            return
-        }
-    })
-
-}
 
 
 
@@ -37,12 +27,13 @@ export function profitupgradeScene() {
 
         onLoad(() => {
             add([
-                sprite("background"),
-                pos(0, 0),
-                opacity(0.65),
+                sprite("background_profit"),
+                pos(WIDTH / 2, HEIGHT / 2),
+                opacity(1),
+                anchor('center'),
                 fixed(),
                 z(-100),
-                scale(0.9)
+                scale(0.55)
             ]);
         });
 
@@ -184,12 +175,12 @@ export function profitupgradeScene() {
 
         })
 
-        onClick('hero_buy_button', (btn) => {
+        onClick('buy_button', (btn) => {
             animation_scale_obj(btn, 0.9,  1)
             if (character.diamonds < heroes_info[btn.index].price) {
                 return
             }
-            wait(0.5, () => {
+            wait(0.1, () => {
                 delcard(cardlist)
                 if (btn.type == 'hero'){
                     character.diamonds -= heroes_info[btn.index].price
@@ -198,6 +189,24 @@ export function profitupgradeScene() {
                 }
 
             })
+        })
+        onClick('wear_button', (btn) => {
+            animation_scale_obj(btn, 0.9, 1)
+            wait(0.1, () => {
+                if (btn.type == 'hero'){
+                    var index = btn.index
+                    if (character_open_hero[index].is_open && !character_open_hero[index].is_wear) {
+                        for (const [key, value] of Object.entries(character_open_hero)) {
+                            character_open_hero[key].is_wear = false
+                        }
+                        character_open_hero[index].is_wear = true
+                        character.id_character = index
+                        delcard(cardlist)
+                        create_card_hero_background(btn.index, 'hero', cardlist)
+                    }
+                }
+            })
+
         })
 
 

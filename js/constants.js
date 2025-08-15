@@ -13,8 +13,8 @@ export const wait_enimation = 0.05
 
 export const character = {
     // Базовые ресурсы
-    money: 100,
-    diamonds: 300,
+    money: 10000,
+    diamonds: 30000,
     reputation: 0,
     energy: 200, // Репутация в деревне
     time_game: 20,
@@ -42,7 +42,8 @@ export const character = {
         click: 1,
         crete: 1,
         income: 1,
-        energy: 1,
+        energy_max: 1,
+        energy_recovery: 1,
     },
     
 
@@ -52,7 +53,7 @@ export const character = {
 
 
 
-    id_character: 1,
+    id_character: 0,
     background: 0,
     id_user: 0,
     name: "Новичок", // Имя персонажа

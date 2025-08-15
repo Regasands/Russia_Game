@@ -12,21 +12,32 @@ const k = kaboom({
 });
 
 
-//  Загрузка для главнойц страрницы
-for (let i = 0; i < button_passive.length; i++) {
-    loadSprite(buttons_game[i], `../sprites/button/main/${buttons_game[i]}.png`);
-}
-
-
+// Загрузка   фонов 
 loadSprite("background", `../sprites/background/${character.background}.png`, {
         width: WIDTH,
         height: HEIGHT });
+
+
+loadSprite("background_profit", `../sprites/background/profit.png`, {
+        width: WIDTH,
+        height: HEIGHT });
+
+loadSprite("background_passive", `../sprites/background/passive.png`, {
+        width: WIDTH,
+        height: HEIGHT });
+
 
 
 // загруцжаем игровых персонажкей
 for (let i = 0; i < 5; i ++) {
     loadSprite(`hero_${i}`, `../sprites/character/${i}.png`);
 
+}
+
+        
+//  Загрузка для главнойц страрницы
+for (let i = 0; i < button_passive.length; i++) {
+    loadSprite(buttons_game[i], `../sprites/button/main/${buttons_game[i]}.png`);
 }
 
 
@@ -49,9 +60,6 @@ loadSound('hero_click', 'sounds/game_sounds/Click_mouse_snd.wav')
 
 
 // загрузка для profit сцены
-loadSprite("background", `../sprites/background/${character.background}.png`, {
-    width: WIDTH,
-    height: HEIGHT });
 
 
 
@@ -63,9 +71,6 @@ loadSound('buy_button', 'sounds/game_sounds/applepay.mp3')
 
 
 //  загрнука для сцены passive
-loadSprite("background", `../sprites/background/${character.background}.png`, {
-    width: WIDTH,
-    height: HEIGHT });
 
 
 loadSound("ahyou", "sounds/game_sounds/fack_you.mp3");
