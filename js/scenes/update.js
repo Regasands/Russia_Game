@@ -37,6 +37,7 @@ export function updatestateScene() {
                 styles: {
                     "💰": { color: rgb(255, 215, 0) },
                     "💎": { color: rgb(0, 191, 255) },
+                    
                 },
                 width: width() - 40, // Перенос по ширине
                 lineSpacing: 20      // Отступ между строками

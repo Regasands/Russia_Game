@@ -201,9 +201,10 @@ export function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist
 export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, type){
     let current_boost
     let next_boost
-        if (obj.name == 'chance_crete') {
-            current_boost =  obj.value(level);
-            next_boost = isMaxLevel ? null : obj.value(level + 1);
+        if (obj.name == 'Золотая пшеница') {
+
+            current_boost =  Math.floor(obj.value(level));
+            next_boost = isMaxLevel ? null : Math.floor(obj.value(level + 1));
         }
         else {
             current_boost =  Math.round(obj.value(level));
@@ -474,7 +475,6 @@ export function create_card_hero_background(index, type, cardlist) {
             anchor('center'),
             scale(obj.scale),
         ]) 
-        console.log('r')
     }
 
 
@@ -542,7 +542,7 @@ export function create_card_boost_list(boosts, listcard) {
         var yPos = -120 + i * 50;
         
         const boostText = boostFrame.add([
-            text(`${boost.icon} ${boost.name}: ${boosts[boost.key]}${boost.suffix}`, {
+            text(`${boost.icon} ${boost.name}: ${Math.floor(boosts[boost.key])}${boost.suffix}`, {
                 size: boostsDisplay.textStyle.size,
                 color: boostsDisplay.textStyle.color,
                 font: boostsDisplay.textStyle.font
@@ -765,4 +765,172 @@ export function create_boost_card(boostData, index, count, posX, posY, card_list
     ]);
 
     card_list.push(card)
+}
+
+
+export function create_vote_project_card(obj, x, y, cardlist) {
+    const style = global_style.vote_project || {
+        color: rgb(60, 80, 100),
+        textColor: rgb(255, 255, 255)
+    };
+
+    // Создаем основу карточки
+    const card = add([
+        rect(WIDTH - 20, 120, { radius: 12 }),
+        area(),
+        pos(x, y),
+        anchor("center"),
+        color(style.color),
+        outline(2, obj.character_open ? rgb(100, 200, 100) : rgb(100, 100, 100)),
+        opacity(0.8),
+        fixed(),
+        `vote_project_${obj.name}`,
+    ]);
+
+    // Заголовок проекта
+    card.add([
+        text(obj.name, {
+            size: 24,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 8
+        }),
+        pos(0, -40),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Описание проекта
+    card.add([
+        text(obj.description, {
+            size: 18,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        pos(0, -5),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Информация о стоимости и голосах
+    const infoText = obj.character_open
+        ? `💰 Стоимость: ${obj.dealy_cost}  в день|🗳️ Голоса: ${obj.vote} в день`
+        : `🔒 Открытие: ${obj.cost_open}`;
+
+    card.add([
+        text(infoText, {
+            size: 18,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        pos(0, 40),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+
+    cardlist.push(card);
+    return card;
+}
+
+export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
+    let isUnlocked = currentVotes >= obj.requirements_vote;
+    const style = global_style.vote_boost || {
+        color: rgb(100, 60, 120),
+        textColor: rgb(255, 255, 255)
+    };
+
+    // Создаем основу карточки
+    const card = add([
+        rect(WIDTH - 20, 100, { radius: 12 }),
+        area(),
+        pos(x, y),
+        anchor("center"),
+        color(style.color),
+        outline(2, isUnlocked ? rgb(150, 100, 200) : rgb(100, 100, 100)),
+        opacity(0.8),
+    ]);
+
+    // Заголовок бонуса
+    card.add([
+        text(obj.name, {
+            size: 20,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 8
+        }),
+        pos(0, -70),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Описание бонуса
+    card.add([
+        text(obj.description, {
+            size: 16,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        pos(0, -30),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Требования для разблокировки
+    const statusText = isUnlocked 
+        ? "✅ Разблокировано" 
+        : `🗳️ Требуется: ${currentVotes}/${obj.requirements_vote} голосов`;
+
+    card.add([
+        text(statusText, {
+            size: 16,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        pos(0, 10),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Эффекты бонуса
+    const effects = Object.entries(obj.effect)
+        .map(([key, value]) => {
+            const effectNames = {
+                luck: "🍀 Удача",
+                click: "👆 Сила клика",
+                crete: "💥 Крит. шанс",
+                income: "💰 Доход",
+                energy_max: "⚡ Макс. энергия",
+                energy_recovery: "🔄 Восстановление"
+            };
+            
+            const unit = key === 'luck' ? '%' : 'x';
+            return `${effectNames[key] || key}: ${value}${unit}`;
+        }).join(' | ');
+
+    card.add([
+        text(effects, {
+            size: 16,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        pos(0, 45),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    cardlist.push(card);
+    return card;
 }

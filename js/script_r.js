@@ -2,8 +2,9 @@ import { mainScene } from './scenes/main.js';
 import { passiveincomeScene } from './scenes/passive.js';
 import { WIDTH, HEIGHT } from './constants.js';
 import { profitupgradeScene } from './scenes/profit.js';
-import { character, buttons_game, button_profit, button_passive } from './constants.js';
+import { buttons_game, button_profit, button_passive } from './constants.js';
 import { updatestateScene } from './scenes/update.js';
+import { voteScene } from './scenes/vote.js';
 
 const k = kaboom({
     width: WIDTH,
@@ -23,6 +24,9 @@ loadSprite("background_profit", `../sprites/background/profit.png`, {
         height: HEIGHT });
 
 loadSprite("background_passive", `../sprites/background/passive.png`, {
+        width: WIDTH,
+        height: HEIGHT });
+loadSprite("background_vote", `../sprites/background/vote_background.png`, {
         width: WIDTH,
         height: HEIGHT });
 
@@ -46,6 +50,21 @@ for (let i = 0; i < 6; i++) {
 for (let i = 0; i < button_passive.length; i++) {
     loadSprite(buttons_game[i], `../sprites/button/main/${buttons_game[i]}.png`);
 }
+
+
+// симуляция дождя 
+loadSprite("rain", "../sprites/icon/rain.png", {
+    sliceX: 4, 
+    sliceY: 1, 
+    anims: {
+        "fall": {
+            from: 0,
+            to: 3,
+            speed: 12,
+            loop: true
+        }
+    }
+});
 
 
 loadSprite("coin", "sprites/icon/coin_am.png", {
@@ -85,7 +104,21 @@ loadSound('upgrade_button', 'sounds/game_sounds/buy_1.mp3')
 loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
 
 
+// загрузка для сцены vote
 
+loadSprite('people', "../sprites/icon/people.png")
+loadSprite("vote_am", "sprites/icon/vote_am.png", {
+    sliceY: 1,
+    sliceX: 3,  
+    anims: {
+        "spin": {
+            from: 0,
+            to: 2,
+            speed: 12,
+            loop: true
+        }
+    }
+});
 
 
 
@@ -105,12 +138,12 @@ for (let i = 1; i < button_passive.length; i++) {
 
 
 // Загрузка аудиофайлов
-loadSound("bg2", "sounds/background_sounds/7.mp3");
+loadSound("bg2", "sounds/background_sounds/8.mp3");
 
 // Запуск всех треков с loop
 const track1 = play("bg2", {
     volume: 0.2,
-    speed: 1,
+    speed: 0.8,
     loop: true
 });
 
@@ -119,6 +152,7 @@ const track1 = play("bg2", {
 passiveincomeScene();
 profitupgradeScene();
 updatestateScene();
+voteScene();
 mainScene();
 go("main");
 

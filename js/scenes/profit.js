@@ -46,9 +46,6 @@ export function profitupgradeScene() {
 
             const money = Math.floor(Number(character.money));
             const diamonds = Number(character.diamonds);
-            const hp = Number(character.hp);
-            const hungry = Number(character.hungry);
-            const energy = Math.min(Number(character.energy), upgrades.energy_max.value(character.energy_max));
 
             return `
             💰 ${money}                         💎 ${diamonds}
@@ -62,8 +59,6 @@ export function profitupgradeScene() {
                 styles: {
                     "💰": { color: rgb(255, 215, 0) },
                     "💎": { color: rgb(0, 191, 255) },
-                    "❤️": { color: rgb(255, 69, 58) },
-                    "🍗": { color: rgb(255, 149, 0) },
                 },
                 width: width() - 40, 
                 lineSpacing: 20  

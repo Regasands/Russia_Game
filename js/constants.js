@@ -5,6 +5,7 @@ export const BUTTONSIZE = Math.floor(Math.min(WIDTH, window.innerWidth) / BUTTON
 export const buttons_game = ['profit', 'passive', 'vote', 'update', 'shop', 'setting']
 export const button_passive = ['', 'real_estate', 'village_business', 'investments', 'shadow_economy', 'smile_face']
 export const button_profit = ['', 'upgrade', 'new_character', 'new_background', 'exchanger', 'new_event']
+export const button_vote = ['', '', 'recive', 'emotion', 'boost', '']
 export const wait_enimation = 0.05
 
 
@@ -14,9 +15,9 @@ export const wait_enimation = 0.05
 export const character = {
     // Базовые ресурсы
     money: 100,
-    diamonds: 1000,
+    diamonds: 10,
     reputation: 0,
-    energy: 200, // Репутация в деревне
+    energy: 200, 
     time_game: 20,
     cost_diamond: 100,
 
@@ -50,12 +51,10 @@ export const character = {
 
     id_character: 0,
     id_background: 0,
-    id_user: 0,
-    name: "Новичок", // Имя персонажа
+    is_rain: true,
     
     // Состояния
-    hungry: 100,
-    vote: 0,
+    votes: 100,
     key_bid: 0.1,
 
     // нужно для обучения
@@ -66,6 +65,93 @@ export const character = {
 };
 
 
+// пассивный доход
+export const character_object_vote = {
+    0: {
+        name: 'Помощь нуждающимся семьям',
+        cost_open: 500,
+        dealy_cost: 50,
+        description: "Поддержка многодетных и малоимущих семей деревни продуктами и одеждой",
+        vote: 50,
+        character_open: false
+    },
+    1: {
+        name: 'Ремонт деревенской школы',
+        cost_open: 1000,
+        dealy_cost: 200,
+        description: "Обновление учебных классов и закупка современного оборудования для школы",
+        vote: 300,
+        character_open: false
+    },
+    2: {
+        name: 'Благоустройство центра деревни',
+        cost_open: 7000,
+        dealy_cost: 900,
+        description: "Создание зоны отдыха, установка скамеек и детской площадки",
+        vote: 800,
+        character_open: false
+    },
+    3: {
+        name: 'Строительство фельдшерского пункта',
+        cost_open: 10000,
+        dealy_cost: 1200,
+        description: "Организация медицинского пункта для оказания первой помощи жителям",
+        vote: 1000,
+        character_open: false
+    },
+}
+
+
+// бонусы от голосов 
+
+export const passsive_vote_boost = {
+    0: {
+        name: "Поддержка общины",
+        description: "Жители ценят вашу помощь и активнее поддерживают ваши инициативы",
+        requirements_vote: 100,
+        effect: {
+            click: 1.2
+        }
+    },
+    1: {
+        name: "Удачливый фермер",
+        description: "Ваша помощь сельскому хозяйству приносит неожиданные бонусы",
+        requirements_vote: 350,
+        effect: {
+            luck: 1.5,
+            income: 1.3
+        }
+    },
+    2: {
+        name: "Энергия деревни",
+        description: "Общественные работы повышают выносливость и продуктивность жителей",
+        requirements_vote: 800,
+        effect: {
+            energy_max: 1.8,
+            energy_recovery: 1.6
+        }
+    },
+    3: {
+        name: "Мастер на все руки",
+        description: "Развитие инфраструктуры учит жителей эффективнее использовать ресурсы",
+        requirements_vote: 1500,
+        effect: {
+            crete: 2.0,
+            click: 1.4
+        }
+    },
+    // 4: {
+    //     name: "Процветающая деревня",
+    //     description: "Комплексное развитие приносит синергетический эффект всем сферам жизни",
+    //     requirements_vote: 2500,
+    //     effect: {
+    //         luck: 2.0,
+    //         income: 1.7,
+    //         crete: 1.5,
+    //         energy_recovery: 1.4
+    //     }
+    // }
+}
 
 
 export const character_passive = {
@@ -643,3 +729,4 @@ export const time_boost = {
         }
     }
 }
+

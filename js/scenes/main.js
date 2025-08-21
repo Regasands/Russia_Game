@@ -14,7 +14,9 @@ import {
     character_open_background,
     backgrounds_info,
     character_boost,
-    time_boost
+    time_boost,
+    character_object_vote,
+    passsive_vote_boost,
 } from "../constants.js";
 
 //  Экспорт,
@@ -167,21 +169,56 @@ export function change_boost_character(){
                     }
                 }
             })
-            character.boost = boost
 
         }
     })
 
+        // Применяем временные бусты
     Object.keys(character_boost).forEach((key) => {
-        if (character_boost[key].count > 0 && character_boost[key].time_start >= time() - time_boost[key].time) {
-            character.boost[Object.keys(time_boost[key].effect)[0]] += Object.values(time_boost[key].effect)[0]
-        } else if (character_boost[key].count > 0 && character_boost[key].time_start  < time() - time_boost[key].time ) {
-            console.log('time_boost', time_boost[key].name, character.boost[time_boost[key].name])
-            character_boost[key].count -= 1;
-            character.boost[Object.keys(time_boost[key].effect)[0]] += Object.values(time_boost[key].effect)[0]
-            character_boost[key].time_start = time();
+        if (character_boost[key].count > 0) {
+            if (character_boost[key].time_start >= time() - time_boost[key].time) {
+                // Буст активен
+                const effectKey = Object.keys(time_boost[key].effect)[0];
+                const effectValue = Object.values(time_boost[key].effect)[0];
+                
+                if (effectKey === 'luck') {
+                    boost[effectKey] += effectValue;
+                } else {
+                    boost[effectKey] *= effectValue;
+                }
+            } else if (character_boost[key].time_start < time() - time_boost[key].time) {
+
+                character_boost[key].count -= 1;
+                
+                const effectKey = Object.keys(time_boost[key].effect)[0];
+                const effectValue = Object.values(time_boost[key].effect)[0];
+                
+                if (effectKey === 'luck') {
+                    boost[effectKey] += effectValue;
+                } else {
+                    boost[effectKey] *= effectValue;
+                }
+                
+                character_boost[key].time_start = time();
+            }
         }
-    })
+    });
+
+    Object.keys(passsive_vote_boost).forEach((key) => {
+        const boostData = passsive_vote_boost[key];
+        if (character.votes >= boostData.requirements_vote) {
+            Object.keys(boostData.effect).forEach((boostKey) => {
+                if (boostKey === 'luck') {
+                    boost[boostKey] += boostData.effect[boostKey];
+                } else {
+                    boost[boostKey] *= boostData.effect[boostKey];
+                }
+            });
+        }
+    });
+
+
+    character.boost = boost;
 };
 
     
@@ -282,16 +319,14 @@ export function mainScene() {
             const money = Math.floor(Number(character.money));
             const diamonds = Number(character.diamonds);
             const days = Number(character.days);
-            const hp = Number(character.hp);
-            const hungry = Number(character.hungry);
-            const key_bid = Number(character.key_bid);
+            const votes = Number(character.votes || 0)
             const dailyIncome = Math.floor(Number(dailyPassiveIncome));
-            const energy = Number(character.energy);
+            const energy = Math.floor(character.energy);
             const time_game = Number(character.time_game);
 
             return `
             💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}/день    
-            🍗 ${hungry}%    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max)}
+            🗳️ ${votes}    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max)}
               📅 ${days}                                   ⏳ ${time_game}:00
             `.replace(/\n\s+/g, '\n').trim();
         };
@@ -303,7 +338,7 @@ export function mainScene() {
                 styles: {
                     "💰": { color: rgb(255, 215, 0) },      // Золотой
                     "💎": { color: rgb(0, 191, 255) },      // Голубой
-                    "🍗": { color: rgb(255, 149, 0) },      // Оранжевый
+                    "🗳️": { color: rgb(255, 105, 180) },    // Розовый для голосов
                     "📊": { color: rgb(175, 82, 222) },     // Фиолетовый
                     "🔋": { color: rgb(52, 199, 89) },      // Салатовый
                     "⏳": { color: rgb(88, 86, 214) }       // Индиго (для времени)
@@ -338,7 +373,9 @@ export function mainScene() {
                     go('profit')
                 } else if (buttons_game[i] == 'update') {
                     go('update_state')
-                }
+                } else if (buttons_game[i] == 'vote') [
+                    go('vote')
+                ]
              });
 
 
@@ -350,7 +387,6 @@ export function mainScene() {
 
         loop(4, () => {
             change_boost_character()
-            console.log(character.boost, character_boost)
         })
 
         loop(0.5, () => {
@@ -384,10 +420,33 @@ export function mainScene() {
         let secondTimer;
 
         secondTimer = loop(1, () => {
+            if (character.is_rain){
+                for (let i = 0; i < 10; i ++) {
+                    var rain = add([
+                        sprite("rain", { anim: "fall" }),
+                        pos(rand(0, WIDTH), -10),
+                        area(),
+                        scale(0.09),
+                        opacity(0.2),
+                        move(DOWN, rand(100, 200)),
+                        anchor("center"),
+                        "rain",
+                    ]);
+                    rain.play('fall')
+                    rain.onUpdate(() => {
+                        if (rain.pos.y > HEIGHT + 10) {
+                            destroy(rain);
+                        }
+                });
+                }
+            }
+
             updateDayNight(character.time_game); 
             character.time_game = (character.time_game + 1) % 24
 
         })
+
+
         wait(4, () => {
 
             dayTimer = loop(23, () => {
@@ -396,10 +455,14 @@ export function mainScene() {
                 character.money += dailyPassiveIncome;
                 character.total_earned += dailyPassiveIncome;
 
-
-            if (character.hungry <= 0) {
-                character.hp -= character.hp_gap;
+            // Считаекм доходы и расзоды от голосов
+            for (let key = 0; key < Object.keys(character_object_vote).length; key ++) {
+                if (character_object_vote[key].character_open) {
+                    character.votes += character_object_vote[key].vote
+                    character.money -= character_object_vote[key].dealy_cost
+                }
             }
+            character.votes -=  Math.floor((character.days * 2) ** 1.3)
 
             character.energy += upgrades.energy_recovery.value(character.energy_recovery) * character.boost.energy_recovery;
             character.energy = Math.min(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max, character.energy);
