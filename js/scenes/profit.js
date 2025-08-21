@@ -2,15 +2,13 @@ import {
     HEIGHT,
     WIDTH,
     BUTTONSIZE,
-    character,
     button_profit,
     upgrades,
     wait_enimation,
     heroes_info,
-    character_open_hero,
     backgrounds_info,
-    character_open_background,
 } from "../constants.js"
+import { loadGameData, saveGameData } from "../gameStorge.js";
 import { delcard  } from "./passive.js";
 import { makeOrnateFrame, animation_scale_obj, change_boost_character } from "./main.js"
 import { create_card_boost_list, create_card_hero_background, create_card_upgrade, create_exchanger_card } from "../card.js";
@@ -21,8 +19,7 @@ import { create_card_boost_list, create_card_hero_background, create_card_upgrad
 
 export function profitupgradeScene() {
     scene('profit', () => {
-
-        // Храним все карты  и запоминаем какоого персонажа показывать сейчас)
+        let gameData = loadGameData();
         let cardlist = []
         let currentIndex_hero = 0
         let currentIndex_background = 0
@@ -44,8 +41,8 @@ export function profitupgradeScene() {
         makeOrnateFrame(WIDTH, HEIGHT / 8)
         const stateText = () => {
 
-            const money = Math.floor(Number(character.money));
-            const diamonds = Number(character.diamonds);
+            const money = Math.floor(Number(gameData.character.money));
+            const diamonds = Number(gameData.character.diamonds);
 
             return `
             💰 ${money}                         💎 ${diamonds}
@@ -81,7 +78,7 @@ export function profitupgradeScene() {
 
                 if (type === 'upgrade') {
                     y = 200 + i * 150;
-                    level = character[key];
+                    level = gameData.character[key];
                     isMaxLevel = level === obj[key].maxLevel;
                     cost = obj[key].cost(level); 
                       create_card_upgrade(
@@ -96,21 +93,22 @@ export function profitupgradeScene() {
                 }
 
                 onClick(`profit_card_${obj[key].name}`, (btn) => {
-                    level = character[key]
+                    level = gameData.character[key]
                     cost = obj[key].cost(level);
 
                     animation_scale_obj(btn, 0.9,  1)
-                    if (character.money >= cost) {
+                    if (gameData.character.money >= cost) {
                         play('buy_button', {volume: 0.4})
-                        character.money -= cost
-                        character[key] += 1;
+                        gameData.character.money -= cost
+                        gameData.character[key] += 1;
                         if (key == 'energy_max') {
-                            character.energy = upgrades.energy_max.value(character.energy_max)
+                            gameData.character.energy = upgrades.energy_max.value(gameData.character.energy_max)
                         }
                         delcard(cardlist)
                         wait(wait_enimation, () =>{
                         render_card(obj, type)
                         })
+                        saveGameData(gameData);
                     } else {
                         play('no_money', {volume: 0.2, speed: 1.5})
                     }
@@ -143,10 +141,8 @@ export function profitupgradeScene() {
         onClick('nav_button', (btn) => {
             animation_scale_obj(btn, 0.7, 1.3)
             wait(0.1, () => {
-            let type
-            let target
-            type = btn.type
-            target = btn.target
+            let type = btn.type
+            let target = btn.target
             delcard(cardlist)
             if (target == 'hero'){
                 currentIndex_hero = currentIndex_hero + type
@@ -173,54 +169,54 @@ export function profitupgradeScene() {
 
         onClick('buy_button', (btn) => {
             animation_scale_obj(btn, 0.9,  1)
-            if (character.diamonds < heroes_info[btn.index].price && btn.type == 'hero') {
+            if (btn.type == 'hero' && gameData.character.diamonds < heroes_info[btn.index].price) {
                 return
             }
-            if (character.diamonds < backgrounds_info[btn.index].price && btn.type == 'background') {
+            if (btn.type == 'background' && gameData.character.diamonds < backgrounds_info[btn.index].price) {
                 return
             }
             wait(0.1, () => {
                 delcard(cardlist)
                 if (btn.type == 'hero'){
-                    character.diamonds -= heroes_info[btn.index].price
-                    character_open_hero[btn.index].is_open = true;
+                    gameData.character.diamonds -= heroes_info[btn.index].price
+                    gameData.character_open_hero[btn.index].is_open = true;
                     create_card_hero_background(btn.index, 'hero', cardlist)
                 } else {
-                    character.diamonds -= backgrounds_info[btn.index].price
-                    character_open_background[btn.index].is_open = true;
-                    create_card_hero_background(btn.index, 'background', cardlist)}
+                    gameData.character.diamonds -= backgrounds_info[btn.index].price
+                    gameData.character_open_background[btn.index].is_open = true;
+                    create_card_hero_background(btn.index, 'background', cardlist)
                 }
-            
-            )
+                saveGameData(gameData);
+            })
         })
         onClick('wear_button', (btn) => {
             animation_scale_obj(btn, 0.9, 1)
             wait(0.1, () => {
                 if (btn.type == 'background'){
                     var index = btn.index
-                    if (character_open_background[index].is_open && !character_open_background[index].is_wear) {
-                        for (const [key, value] of Object.entries(character_open_hero)) {
-                            character_open_background[key].is_wear = false
+                    if (gameData.character_open_background[index].is_open && !gameData.character_open_background[index].is_wear) {
+                        for (const key of Object.keys(gameData.character_open_background)) {
+                            gameData.character_open_background[key].is_wear = false
                         }
-                        character_open_background[index].is_wear = true
-                        character.id_background = index
+                        gameData.character_open_background[index].is_wear = true
+                        gameData.character.id_background = index
                         delcard(cardlist)
                         create_card_hero_background(btn.index, 'background', cardlist)
                     }
                 } else {
                     var index = btn.index
-                    if (character_open_hero[index].is_open && !character_open_hero[index].is_wear) {
-                        for (const [key, value] of Object.entries(character_open_hero)) {
-                            character_open_hero[key].is_wear = false
+                    if (gameData.character_open_hero[index].is_open && !gameData.character_open_hero[index].is_wear) {
+                        for (const key of Object.keys(gameData.character_open_hero)) {
+                            gameData.character_open_hero[key].is_wear = false
                         }
-                        character_open_hero[index].is_wear = true
-                        character.id_character = index
+                        gameData.character_open_hero[index].is_wear = true
+                        gameData.character.id_character = index
                         delcard(cardlist)
                         create_card_hero_background(btn.index, 'hero', cardlist)
                     }
                 }
+                saveGameData(gameData);
             })
-
         })
 
     let click = 1
@@ -229,11 +225,11 @@ export function profitupgradeScene() {
     onClick(`sell_diamond`, (btn) => {
         animation_scale_obj(btn, 0.9, 1)
         if (
-            (sell_click > 1 && character.diamonds - (sell_click * 2) >= 0) ||
-            (sell_click === 1 && character.diamonds - sell_click >= 0)
+            (sell_click > 1 && gameData.character.diamonds - (sell_click * 2) >= 0) ||
+            (sell_click === 1 && gameData.character.diamonds - sell_click >= 0)
         ) {
             if ((time() - btn.last_time < 1) && 
-                (character.diamonds - (sell_click * 2) >= 0)
+                (gameData.character.diamonds - (sell_click * 2) >= 0)
             )
                 {
                 sell_click  *= 2
@@ -242,12 +238,13 @@ export function profitupgradeScene() {
             }
 
             btn.last_time = time()
-            character.diamonds -= sell_click;
-            character.money += character.cost_diamond * sell_click
+            gameData.character.diamonds -= sell_click;
+            gameData.character.money += gameData.character.cost_diamond * sell_click
             delcard(cardlist)
             wait(wait_enimation - 0.04, () => {
-                create_exchanger_card(cardlist, character.cost_diamond);
+                create_exchanger_card(cardlist, gameData.character.cost_diamond);
             })
+            saveGameData(gameData);
         } else {
             sell_click = 1
         }
@@ -256,13 +253,13 @@ export function profitupgradeScene() {
     onClick(`buy_diamond`, (btn) => {
         animation_scale_obj(btn, 0.9, 1)
         if (
-            (character.money >=  (click * 2) * character.cost_diamond) ||
-            (click == 1 && character.money >= character.cost_diamond)
+            (gameData.character.money >=  (click * 2) * gameData.character.cost_diamond) ||
+            (click == 1 && gameData.character.money >= gameData.character.cost_diamond)
         )
             {
             if  (
                 (time() - btn.last_time < 1) &&
-                (character.money >=  (click * 2) * character.cost_diamond)
+                (gameData.character.money >=  (click * 2) * gameData.character.cost_diamond)
             ){
                 click  *= 2
             } else {
@@ -270,12 +267,13 @@ export function profitupgradeScene() {
             }
             btn.last_time = time()
 
-            character.diamonds += click;
-            character.money -= character.cost_diamond * click;
+            gameData.character.diamonds += click;
+            gameData.character.money -= gameData.character.cost_diamond * click;
             delcard(cardlist)
             wait(wait_enimation - 0.04, () => {
-                create_exchanger_card(cardlist, character.cost_diamond);
+                create_exchanger_card(cardlist, gameData.character.cost_diamond);
             })
+            saveGameData(gameData);
         } else {
             click = 1
         }
@@ -303,10 +301,10 @@ export function profitupgradeScene() {
                 } else if (button_profit[i] == 'new_background') {
                     create_card_hero_background(currentIndex_background, 'background', cardlist)
                 } else if (button_profit[i] == 'new_event') {
-                    change_boost_character()
-                    create_card_boost_list(character.boost, cardlist)
+                    change_boost_character(gameData)
+                    create_card_boost_list(gameData.character.boost, cardlist)
                 } else if (button_profit[i] == 'exchanger') {
-                    create_exchanger_card(cardlist, character.cost_diamond)
+                    create_exchanger_card(cardlist, gameData.character.cost_diamond)
                 }
 
             });

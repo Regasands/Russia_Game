@@ -2,14 +2,11 @@ import {
     HEIGHT,
     WIDTH,
     BUTTONSIZE,
-    character_passive,
     passive_income,
     wait_enimation,
     button_passive,
 } from "../constants.js";
-
-
-import { character } from "../constants.js";
+import { loadGameData, saveGameData } from "../gameStorge.js";
 import { createCard, create_invest_card } from "../card.js";
 import { makeOrnateFrame, getPassiveIncome, animation_scale_obj } from "./main.js";
 
@@ -31,6 +28,7 @@ export function delcard(cardlist) {
 //САМА СЦЕНА
 export function passiveincomeScene () {
     scene("passive", () => {
+        let gameData = loadGameData();
 
         onLoad(() => {
             add([
@@ -49,7 +47,7 @@ export function passiveincomeScene () {
         function passive_insome_last() {
             let dailyPassiveIncome = 0
             for (let i = 0; i < 5; i ++){
-                dailyPassiveIncome += getPassiveIncome(i)
+                dailyPassiveIncome += getPassiveIncome(i, gameData)
             }
             return dailyPassiveIncome
         }
@@ -62,14 +60,14 @@ export function passiveincomeScene () {
         makeOrnateFrame(WIDTH, HEIGHT/ 10)
 
         const stateText = () => {
-            // Приводим все числовые значения к Number
-            const money = Math.floor(Number(character.money));
-            const diamonds = Number(character.diamonds);
-            const key_bid = Number(character.key_bid);
+            const money = Math.floor(Number(gameData.character.money));
+            const diamonds = Number(gameData.character.diamonds);
+            const key_bid = Number(gameData.character.key_bid);
             const dailyIncome = Math.floor(Number(dailyPassiveIncome));
 
             return `
-            💰 ${money}         💎 ${diamonds}      🏦 ${(key_bid * 100).toFixed(1)}%        📊${dailyIncome}
+            💰 ${money}    🏦 ${(key_bid * 100).toFixed(1)}%    📊 +${dailyIncome}/день
+            💎 ${diamonds}
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -126,14 +124,14 @@ export function passiveincomeScene () {
 
 
                 if (character_part != 'investments') {
-                    level = character_passive[character_part][i2];
+                    level = gameData.character_passive[character_part][i2];
                     isMaxLevel = level === 10;
                     cost = isMaxLevel ? "MAX" : Math.round(obj[i2].cost(level + 1));
                 }
                 if (character_part == 'investments' ){
                     create_invest_card(obj[i2], WIDTH / 2, y - 20, global_card, i2)
 
-                } else if (i2 == 0 || character_passive[character_part][i2 - 1] > 0){
+                } else if (i2 == 0 || gameData.character_passive[character_part][i2 - 1] > 0){
                     createCard(obj[i2],
                         level,
                         isMaxLevel,
@@ -154,11 +152,11 @@ export function passiveincomeScene () {
                 onClick(`invest_${obj[i2].name}_sell`, (btn) => {
                     animation_scale_obj(btn, 0.9, 1)
                     if (
-                        (sell_click > 1 && character_passive.investments[i2].count - (sell_click * 2) >= 0) ||
-                        (sell_click === 1 && character_passive.investments[i2].count - sell_click >= 0)
+                        (sell_click > 1 && gameData.character_passive.investments[i2].count - (sell_click * 2) >= 0) ||
+                        (sell_click === 1 && gameData.character_passive.investments[i2].count - sell_click >= 0)
                     ) {
                         if ((time() - btn.last_time < 1) && 
-                            (character_passive.investments[i2].count - (sell_click * 2) >= 0)
+                            (gameData.character_passive.investments[i2].count - (sell_click * 2) >= 0)
                         )
                             {
                             sell_click  *= 2
@@ -167,12 +165,13 @@ export function passiveincomeScene () {
                         }
 
                         btn.last_time = time()
-                        character_passive.investments[i2].count -= sell_click;
-                        character.money += character_passive.investments[i2].current_price * sell_click
+                        gameData.character_passive.investments[i2].count -= sell_click;
+                        gameData.character.money += gameData.character_passive.investments[i2].current_price * sell_click
                         delcard(global_card)
                         wait(wait_enimation - 0.04, () => {
                             render_cards(obj, character_part);
                         })
+                        saveGameData(gameData);
                     } else {
                         sell_click = 1
                     }
@@ -181,13 +180,13 @@ export function passiveincomeScene () {
                 onClick(`invest_${obj[i2].name}_buy`, (btn) => {
                     animation_scale_obj(btn, 0.9, 1)
                     if (
-                        (character.money >=  (click * 2) * character_passive.investments[i2].current_price) ||
-                        (click == 1 && character.money >= character_passive.investments[i2].current_price)
+                        (gameData.character.money >=  (click * 2) * gameData.character_passive.investments[i2].current_price) ||
+                        (click == 1 && gameData.character.money >= gameData.character_passive.investments[i2].current_price)
                     )
                      {
                         if  (
                             (time() - btn.last_time < 1) &&
-                            (character.money >=  (click * 2) * character_passive.investments[i2].current_price)
+                            (gameData.character.money >=  (click * 2) * gameData.character_passive.investments[i2].current_price)
                         ){
                             click  *= 2
                         } else {
@@ -195,12 +194,13 @@ export function passiveincomeScene () {
                         }
                         btn.last_time = time()
 
-                        character_passive.investments[i2].count += click;
-                        character.money -= character_passive.investments[i2].current_price * click;
+                        gameData.character_passive.investments[i2].count += click;
+                        gameData.character.money -= gameData.character_passive.investments[i2].current_price * click;
                         delcard(global_card)
                         wait(wait_enimation - 0.04, () => {
                             render_cards(obj, character_part);
                         })
+                        saveGameData(gameData);
                     } else {
                         click = 1
                     }
@@ -208,7 +208,7 @@ export function passiveincomeScene () {
 
 
                 onClick(`passive_card_${obj[i2].name}`, (btn) => {
-                    level = character_passive[character_part][i2];
+                    level = gameData.character_passive[character_part][i2];
                     cost = btn.isMaxLevel ? "MAX" : Math.round(obj[i2].cost(level + 1));
                     animation_scale_obj(btn, 0.8,   1)
 
@@ -218,16 +218,16 @@ export function passiveincomeScene () {
 
                     };
 
-                    if (character.money >= cost) {
+                    if (gameData.character.money >= cost) {
                         play('upgrade_button', {valume: 1})
-                        character.money -= cost;
-                        character_passive[character_part][i2] += 1;
+                        gameData.character.money -= cost;
+                        gameData.character_passive[character_part][i2] += 1;
                         dailyPassiveIncome = passive_insome_last();
                         delcard(global_card);
                         wait(wait_enimation, () => {
                             render_cards(obj, character_part);
                         })
-
+                        saveGameData(gameData);
                     } else  {
                         play('no_money', {volume: 0.2, speed: 1.5})
                     }

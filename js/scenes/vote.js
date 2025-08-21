@@ -2,20 +2,13 @@ import {
     HEIGHT,
     WIDTH,
     BUTTONSIZE,
-    character_passive,
-    passive_income,
-    wait_enimation,
-    button_passive,
-    button_vote,
-    character_object_vote,
     upgrades,
     passsive_vote_boost,
+    button_vote,
 } from "../constants.js";
-
-
-import { character } from "../constants.js";
-import { createCard, create_invest_card, create_vote_boost_card, create_vote_project_card } from "../card.js";
-import { makeOrnateFrame, getPassiveIncome, animation_scale_obj } from "./main.js";
+import { loadGameData, saveGameData } from "../gameStorge.js";
+import { create_vote_boost_card, create_vote_project_card } from "../card.js";
+import { makeOrnateFrame, animation_scale_obj } from "./main.js";
 import { delcard } from "./passive.js";
 
 
@@ -24,6 +17,8 @@ import { delcard } from "./passive.js";
 
 export function voteScene() {
     scene("vote", () => {
+        let gameData = loadGameData();
+
         onLoad(() => {
             add([
                 sprite("background_vote"),
@@ -40,14 +35,14 @@ export function voteScene() {
 
         const stateText = () => {
             // Приводим все числовые значения к Number
-            const money = Math.floor(Number(character.money));
-            const diamonds = Number(character.diamonds);
-            const energy = Number(character.energy);
-            const votes = Number(character.votes || 0)
+            const money = Math.floor(Number(gameData.character.money));
+            const diamonds = Number(gameData.character.diamonds);
+            const energy = Number(gameData.character.energy);
+            const votes = Number(gameData.character.votes || 0)
 
             return `
             💰 ${money}         💎 ${diamonds}
-            🗳️ ${votes}         🔋 ${Math.floor(energy)}/${Math.floor(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max)}
+            🗳️ ${votes}         🔋 ${Math.floor(energy)}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -93,19 +88,20 @@ export function voteScene() {
                 create_vote_project_card(obj[key], WIDTH / 2, key * 150 + 170, cardlist)
                 onClick(`vote_project_${obj[key].name}`, (btn) => {
                     animation_scale_obj(btn, 0.9, 1)
-                    if (character.money >= obj[key].cost_open && !obj[key].character_open) {
-                        character.money -= obj[key].cost_open
+                    if (gameData.character.money >= obj[key].cost_open && !obj[key].character_open) {
+                        gameData.character.money -= obj[key].cost_open
                         obj[key].character_open = true
                         stateLabel.text = stateText()
                         delcard([btn])
                         create_vote_project_card(obj[key], WIDTH / 2, key * 150 + 170, cardlist)
+                        saveGameData(gameData);
                     }
                 })
             }
         }
 
 
-        render_card(character_object_vote)
+        render_card(gameData.character_object_vote)
         // рисууем кнопки перехода 
         for (let i = 2; i < button_vote.length - 1; i++) {
             loadSprite(button_vote[i], `../sprites/button/vote/${button_vote[i]}.png`);
@@ -123,7 +119,7 @@ export function voteScene() {
                     animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
                     delcard(cardlist)
                     if (button_vote[i] == 'recive') {
-                        render_card(character_object_vote)
+                        render_card(gameData.character_object_vote)
                     } else if (button_vote[i] == 'emotion') {
 
                         var people = add([
@@ -138,7 +134,7 @@ export function voteScene() {
                         onClick("people", (people) => {
                             play('hero_click', {volume: 0.09, speed: 1.3})
                             animation_scale_obj(people, 0.35, 0.4)
-                            if (character.energy == 0) {
+                            if (gameData.character.energy == 0) {
                                 return;
                             }
                             if (Math.random() > 0.6 ){
@@ -161,21 +157,22 @@ export function voteScene() {
                                 });
                             }
                             
-                            let chance = upgrades.chance_crete.value(character.chance_crete) * character.boost.crete >= Math.random()
-                            let click = upgrades.click_boost.value(character.click_boost) * character.boost.click
-                            if (click - character.energy >= 0) {
-                                character.votes += character.energy;
-                                character.energy = 0          
-                            }  else if (click < character.energy) {   
-                                character.energy -= click; 
+                            let chance = upgrades.chance_crete.value(gameData.character.chance_crete) * gameData.character.boost.crete >= Math.random()
+                            let click = upgrades.click_boost.value(gameData.character.click_boost) * gameData.character.boost.click
+                            if (click - gameData.character.energy >= 0) {
+                                gameData.character.votes += gameData.character.energy;
+                                gameData.character.energy = 0          
+                            }  else if (click < gameData.character.energy) {   
+                                gameData.character.energy -= click; 
                                 click = chance ? click * 5: click
-                                character.votes += click;
+                                gameData.character.votes += click;
                             } 
+                            saveGameData(gameData);
                         });
                 
                     } else if (button_vote[i] == 'boost') {
                         for (let key = 0; key < Object.keys(passsive_vote_boost).length; key ++) {
-                            create_vote_boost_card(passsive_vote_boost[key], WIDTH / 2, key * 150 + 170, cardlist, character.votes)
+                            create_vote_boost_card(passsive_vote_boost[key], WIDTH / 2, key * 150 + 170, cardlist, gameData.character.votes)
                         }
                     }
                 });

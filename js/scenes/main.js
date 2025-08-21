@@ -3,21 +3,17 @@ import {
     WIDTH,
     BUTTONSIZE,
     buttons_game,
-    character_passive,
     passive_income,
     wait_enimation,
-    character,
     upgrades,
     DAY_NIGHT_CYCLE,
     heroes_info,
-    character_open_hero,
-    character_open_background,
     backgrounds_info,
-    character_boost,
     time_boost,
     character_object_vote,
     passsive_vote_boost,
 } from "../constants.js";
+import { loadGameData, saveGameData } from "../gameStorge.js";
 
 //  Экспорт,
 export function animation_scale_obj(object, animations_scale, return_animation) {
@@ -51,22 +47,22 @@ export const makeOrnateFrame = (width, height) => {
 
 // Очень костылльная штука, в дальнейшем надо передлать,чтобы для каждыой локации
 // Не писать if , TODO подумать как реализовать
-export function getPassiveIncome(index) {
+export function getPassiveIncome(index, gameData) {
     let passiveIncome = 0;
     let level = 0;
-    level = character_passive.real_estate[index];
+    level = gameData.character_passive.real_estate[index];
     if (level > 0) {
         passiveIncome += passive_income.real_estate[index].income(level);
     }
-    level = character_passive.village_business[index];
+    level = gameData.character_passive.village_business[index];
     if (level > 0) {
         passiveIncome += passive_income.village_business[index].income(level);
     }
-    level = character_passive.shadow_economy[index];
+    level = gameData.character_passive.shadow_economy[index];
     if (level > 0) {
         passiveIncome += passive_income.shadow_economy[index].income(level);
     }
-    return passiveIncome * character.boost.income;
+    return passiveIncome * gameData.character.boost.income;
 
 }
 
@@ -132,7 +128,7 @@ function setupDayNightSystem() {
 
 
 // Так надо сделать функцию которая считает бусты
-export function change_boost_character(){
+export function change_boost_character(gameData){
     var boost = {
         luck: 0,
         click: 1,
@@ -141,16 +137,16 @@ export function change_boost_character(){
         energy_max: 1,
         energy_recovery: 1,
     }
-    Object.keys(character_open_hero).forEach((key) => {
-        if (character_open_hero[key].is_wear) {
+    Object.keys(gameData.character_open_hero).forEach((key) => {
+        if (gameData.character_open_hero[key].is_wear) {
             Object.keys(heroes_info[key].effect).forEach((key2) => {
                 boost[key2] = heroes_info[key].effect[key2]
             })
-            character.boost = boost
+            gameData.character.boost = boost
         }
     })
-    Object.keys(character_open_background).forEach((key) => {
-        if (character_open_background[key].is_wear) {
+    Object.keys(gameData.character_open_background).forEach((key) => {
+        if (gameData.character_open_background[key].is_wear) {
             Object.keys(backgrounds_info[key].effect).forEach((key2) => {
                 if (key == 'all_effects'){
                     Object.keys(boost).forEach((key3) => {
@@ -173,40 +169,33 @@ export function change_boost_character(){
         }
     })
 
-        // Применяем временные бусты
-    Object.keys(character_boost).forEach((key) => {
-        if (character_boost[key].count > 0) {
-            if (character_boost[key].time_start >= time() - time_boost[key].time) {
-                // Буст активен
+    Object.keys(gameData.character_boost).forEach((key) => {
+        if (gameData.character_boost[key].count > 0) {
+            if (gameData.character_boost[key].time_start >= time() - time_boost[key].time) {
                 const effectKey = Object.keys(time_boost[key].effect)[0];
                 const effectValue = Object.values(time_boost[key].effect)[0];
-                
                 if (effectKey === 'luck') {
                     boost[effectKey] += effectValue;
                 } else {
                     boost[effectKey] *= effectValue;
                 }
-            } else if (character_boost[key].time_start < time() - time_boost[key].time) {
-
-                character_boost[key].count -= 1;
-                
+            } else if (gameData.character_boost[key].time_start < time() - time_boost[key].time) {
+                gameData.character_boost[key].count -= 1;
                 const effectKey = Object.keys(time_boost[key].effect)[0];
                 const effectValue = Object.values(time_boost[key].effect)[0];
-                
                 if (effectKey === 'luck') {
                     boost[effectKey] += effectValue;
                 } else {
                     boost[effectKey] *= effectValue;
                 }
-                
-                character_boost[key].time_start = time();
+                gameData.character_boost[key].time_start = time();
             }
         }
     });
 
     Object.keys(passsive_vote_boost).forEach((key) => {
         const boostData = passsive_vote_boost[key];
-        if (character.votes >= boostData.requirements_vote) {
+        if (gameData.character.votes >= boostData.requirements_vote) {
             Object.keys(boostData.effect).forEach((boostKey) => {
                 if (boostKey === 'luck') {
                     boost[boostKey] += boostData.effect[boostKey];
@@ -217,33 +206,28 @@ export function change_boost_character(){
         }
     });
 
-
-    character.boost = boost;
+    gameData.character.boost = boost;
 };
 
     
 
 export function mainScene() {
-
-
-
-    scene("main", () => {  // ← Начало callback-функции сцены
+    scene("main", () => {
+        let gameData = loadGameData();
 
         onLoad(() => {
             add([
-                sprite(`background_${character.id_background}`),
+                sprite(`background_${gameData.character.id_background}`),
                 anchor('center'),
                 pos(WIDTH / 2, HEIGHT / 2),
                 fixed(),
                 z(-100),
                 scale(0.7),
             ]);
-                        // Загружаем храктеристки персонажа 
-            // TODO тут же будет и отрисовка персонажа в идеале
-            change_boost_character()
+            change_boost_character(gameData)
             var hero = add([
                 pos(WIDTH / 2, HEIGHT / 2 + 20),
-                sprite(`hero_${character.id_character}`),
+                sprite(`hero_${gameData.character.id_character}`),
                 scale(0.4),
                 area({ scale: true }),
                 anchor("center"),
@@ -251,23 +235,20 @@ export function mainScene() {
                 {
                     nooficialname: 'Hero',
                 }
-                ])
+            ])
         });
 
 
         // Считаем пасивный доход
         let dailyPassiveIncome = 0;
         for (let i = 0; i < 5; i ++) {
-            dailyPassiveIncome += getPassiveIncome(i);
+            dailyPassiveIncome += getPassiveIncome(i, gameData);
         }
 
-
-
-
         onClick("hero", (hero) => {
-            play('hero_click', {volume: 0.09, speed: 1.3})
+            play('hero_click', {volume: 0.09, speed: 1})
             animation_scale_obj(hero, 0.35, 0.4)
-            if (character.energy == 0) {
+            if (gameData.character.energy == 0) {
                 return;
             }
             if (Math.random() > 0.6 ){
@@ -292,41 +273,39 @@ export function mainScene() {
                 });
             }
             
-            let chance = upgrades.chance_crete.value(character.chance_crete) * character.boost.crete >= Math.random()
-            let click = upgrades.click_boost.value(character.click_boost) * character.boost.click
-            if (click - character.energy >= 0) {
-                character.money += character.energy;
-                character.total_earned += character.energy;
-                character.energy = 0          
-            }  else if (click < character.energy) {   
-                character.energy -= click; 
+            let chance = upgrades.chance_crete.value(gameData.character.chance_crete) * gameData.character.boost.crete >= Math.random()
+            let click = upgrades.click_boost.value(gameData.character.click_boost) * gameData.character.boost.click
+            if (click - gameData.character.energy >= 0) {
+                gameData.character.money += gameData.character.energy;
+                gameData.character.total_earned += gameData.character.energy;
+                gameData.character.energy = 0          
+            }  else if (click < gameData.character.energy) {   
+                gameData.character.energy -= click; 
                 click = chance ? click * 5: click
-                character.money += click;
-                character.total_earned += click;
+                gameData.character.money += click;
+                gameData.character.total_earned += click;
                 if (chance){
                     addKaboom(hero.pos)
                 }
             }
-
-
-
+            saveGameData(gameData);
         });
 
         // Инициализация
         makeOrnateFrame( WIDTH, HEIGHT / 6.7);
 
         const stateText = () => {
-            const money = Math.floor(Number(character.money));
-            const diamonds = Number(character.diamonds);
-            const days = Number(character.days);
-            const votes = Number(character.votes || 0)
+            const money = Math.floor(Number(gameData.character.money));
+            const diamonds = Number(gameData.character.diamonds);
+            const days = Number(gameData.character.days);
+            const votes = Number(gameData.character.votes || 0)
             const dailyIncome = Math.floor(Number(dailyPassiveIncome));
-            const energy = Math.floor(character.energy);
-            const time_game = Number(character.time_game);
+            const energy = Math.floor(gameData.character.energy);
+            const time_game = Number(gameData.character.time_game);
 
             return `
             💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}/день    
-            🗳️ ${votes}    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max)}
+            🗳️ ${votes}    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
               📅 ${days}                                   ⏳ ${time_game}:00
             `.replace(/\n\s+/g, '\n').trim();
         };
@@ -386,7 +365,8 @@ export function mainScene() {
         const updateDayNight = setupDayNightSystem();
 
         loop(4, () => {
-            change_boost_character()
+            change_boost_character(gameData)
+            saveGameData(gameData);
         })
 
         loop(0.5, () => {
@@ -395,11 +375,11 @@ export function mainScene() {
 
             for (let i = 0; i < 5; i ++) {
                 let obj = passive_income.investments[i]
-                let obj_ch = character_passive.investments[i]
+                let obj_ch = gameData.character_passive.investments[i]
                 let cost = obj_ch.current_price
                 if (obj_ch.delay == 0){
                     obj_ch.delay = obj.delay
-                    const baseProbability = obj.chance(character.key_bid) + character.boost.luck;
+                    const baseProbability = obj.chance(gameData.character.key_bid) + gameData.character.boost.luck;
                     const randomValue = Math.random();
                     const isPositiveChange = randomValue < baseProbability;
                     const changeIntensity = 0.05 + Math.random() * 0.1;
@@ -414,13 +394,14 @@ export function mainScene() {
                     obj_ch.delay -= 1;
                 }
             }
+            saveGameData(gameData);
         });
 
         let dayTimer;
         let secondTimer;
 
         secondTimer = loop(1, () => {
-            if (character.is_rain){
+            if (gameData.character.is_rain){
                 for (let i = 0; i < 10; i ++) {
                     var rain = add([
                         sprite("rain", { anim: "fall" }),
@@ -441,39 +422,39 @@ export function mainScene() {
                 }
             }
 
-            updateDayNight(character.time_game); 
-            character.time_game = (character.time_game + 1) % 24
-
+            updateDayNight(gameData.character.time_game);
+            gameData.character.time_game = (gameData.character.time_game + 1) % 24
+            saveGameData(gameData);
         })
-
 
         wait(4, () => {
 
             dayTimer = loop(23, () => {
-                character.days += 1
-                character.time_game = 0
-                character.money += dailyPassiveIncome;
-                character.total_earned += dailyPassiveIncome;
+                gameData.character.days += 1
+                gameData.character.time_game = 0
+                gameData.character.money += dailyPassiveIncome;
+                gameData.character.total_earned += dailyPassiveIncome;
 
             // Считаекм доходы и расзоды от голосов
             for (let key = 0; key < Object.keys(character_object_vote).length; key ++) {
-                if (character_object_vote[key].character_open) {
-                    character.votes += character_object_vote[key].vote
-                    character.money -= character_object_vote[key].dealy_cost
+                if (gameData.character_object_vote[key].character_open) {
+                    gameData.character.votes += gameData.character_object_vote[key].vote
+                    gameData.character.money -= gameData.character_object_vote[key].dealy_cost
                 }
             }
-            character.votes -=  Math.floor((character.days * 2) ** 1.3)
+            gameData.character.votes -=  Math.floor((gameData.character.days * 2) ** 1.3)
 
-            character.energy += upgrades.energy_recovery.value(character.energy_recovery) * character.boost.energy_recovery;
-            character.energy = Math.min(upgrades.energy_max.value(character.energy_max) * character.boost.energy_max, character.energy);
+            gameData.character.energy += upgrades.energy_recovery.value(gameData.character.energy_recovery) * gameData.character.boost.energy_recovery;
+            gameData.character.energy = Math.min(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max, gameData.character.energy);
 
 
 
-            if (character.days % 20 == 0) {
+            if (gameData.character.days % 20 == 0) {
                 const randomChange = rand(-0.3, 0.3);
-                character.key_bid = Math.max(0, Math.min(1.5, character.key_bid + randomChange));
+                gameData.character.key_bid = Math.max(0, Math.min(1.5, gameData.character.key_bid + randomChange));
                 }
-                });
+                saveGameData(gameData);
+            });
             });
 
         onSceneLeave(() => {

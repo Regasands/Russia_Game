@@ -1,11 +1,13 @@
 import { create_boost_card } from "../card.js";
-import { WIDTH,  HEIGHT, BUTTONSIZE, character, time_boost, character_boost } from "../constants.js";
+import { WIDTH,  HEIGHT, BUTTONSIZE, time_boost } from "../constants.js";
+import { loadGameData, saveGameData } from "../gameStorge.js";
 import { makeOrnateFrame, animation_scale_obj } from "./main.js";
 import { delcard } from "./passive.js";
 
 
 export function updatestateScene() {
     scene('update_state', () => {
+        let gameData = loadGameData();
         let cardlist = []
         onLoad(() => {
             add([
@@ -22,8 +24,8 @@ export function updatestateScene() {
         // создаем базовые значкии
         makeOrnateFrame(WIDTH, HEIGHT/ 10)
         const stateText = () => {
-            const money = Math.floor(Number(character.money));
-            const diamonds = Number(character.diamonds);
+            const money = Math.floor(Number(gameData.character.money));
+            const diamonds = Number(gameData.character.diamonds);
 
             return `
             💰 ${money}         💎 ${diamonds} 
@@ -67,17 +69,18 @@ export function updatestateScene() {
         
 
         Object.keys(time_boost).forEach((key) => {
-           create_boost_card(time_boost[key], key, character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist)
+           create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist)
             onClick(`boost_button_${time_boost[key].name}`, (btn) => {
                 animation_scale_obj(btn, 0.9, 1)
                 wait(0.1, () => {
-                    if (character.diamonds >=  time_boost[key].cost) {
-                        character.diamonds -= time_boost[key].cost;
-                        character_boost[key].count += 1;
-                        character_boost[key].time_start = time();
+                    if (gameData.character.diamonds >=  time_boost[key].cost) {
+                        gameData.character.diamonds -= time_boost[key].cost;
+                        gameData.character_boost[key].count += 1;
+                        gameData.character_boost[key].time_start = time();
                         stateLabel.text = stateText();
                         delcard([btn]);
-                        create_boost_card(time_boost[key], key, character_boost[key].count, WIDTH / 2, key * 150 + 150, cardlist);
+                        create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key * 150 + 150, cardlist);
+                        saveGameData(gameData);
                     }
             })
         })
