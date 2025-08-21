@@ -81,7 +81,7 @@ loadSound('buy_button', 'sounds/game_sounds/applepay.mp3')
 
 
 loadSound("ahyou", "sounds/game_sounds/fack_you.mp3");
-loadSound('upgrade_button', 'sounds/game_sounds/upgrade_button.mp3')
+loadSound('upgrade_button', 'sounds/game_sounds/buy_1.mp3')
 loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
 
 

@@ -66,9 +66,21 @@ export function updatestateScene() {
         
 
         Object.keys(time_boost).forEach((key) => {
-        console.log('this', time_boost[key])
            create_boost_card(time_boost[key], key, character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist)
-            
+            onClick(`boost_button_${time_boost[key].name}`, (btn) => {
+                animation_scale_obj(btn, 0.9, 1)
+                wait(0.1, () => {
+                    if (character.diamonds >=  time_boost[key].cost) {
+                        character.diamonds -= time_boost[key].cost;
+                        character_boost[key].count += 1;
+                        character_boost[key].time_start = time();
+                        stateLabel.text = stateText();
+                        delcard([btn]);
+                        create_boost_card(time_boost[key], key, character_boost[key].count, WIDTH / 2, key * 150 + 150, cardlist);
+                    }
+            })
         })
-})
+    })
 }
+
+)}

@@ -12,7 +12,9 @@ import {
     heroes_info,
     character_open_hero,
     character_open_background,
-    backgrounds_info
+    backgrounds_info,
+    character_boost,
+    time_boost
 } from "../constants.js";
 
 //  Экспорт,
@@ -166,11 +168,20 @@ export function change_boost_character(){
                 }
             })
             character.boost = boost
-            console.log(character.boost)
-            return
+
         }
     })
 
+    Object.keys(character_boost).forEach((key) => {
+        if (character_boost[key].count > 0 && character_boost[key].time_start >= time() - time_boost[key].time) {
+            character.boost[Object.keys(time_boost[key].effect)[0]] += Object.values(time_boost[key].effect)[0]
+        } else if (character_boost[key].count > 0 && character_boost[key].time_start  < time() - time_boost[key].time ) {
+            console.log('time_boost', time_boost[key].name, character.boost[time_boost[key].name])
+            character_boost[key].count -= 1;
+            character.boost[Object.keys(time_boost[key].effect)[0]] += Object.values(time_boost[key].effect)[0]
+            character_boost[key].time_start = time();
+        }
+    })
 };
 
     
@@ -337,8 +348,12 @@ export function mainScene() {
         // рендер дня и ночи 
         const updateDayNight = setupDayNightSystem();
 
-        loop(0.5, () => {
+        loop(4, () => {
+            change_boost_character()
+            console.log(character.boost, character_boost)
+        })
 
+        loop(0.5, () => {
 
             stateLabel.text = stateText();
 

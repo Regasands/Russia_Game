@@ -701,7 +701,7 @@ export function create_boost_card(boostData, index, count, posX, posY, card_list
         {
                 index: index
         },
-        'button_boost_buy'
+        `boost_button_${boostData.name}`
     ]);
 
 
