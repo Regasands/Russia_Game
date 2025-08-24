@@ -8,15 +8,23 @@ import {
 } from "../constants.js";
 import { loadGameData, saveGameData } from "../gameStorge.js";
 import { create_vote_boost_card, create_vote_project_card } from "../card.js";
-import { makeOrnateFrame, animation_scale_obj } from "./main.js";
+import { makeOrnateFrame, animation_scale_obj, spawnRain } from "./main.js";
 import { delcard } from "./passive.js";
 
-
-
-
+function addDarkOverlay() {
+    add([
+        rect(width(), height()),
+        color(0, 0, 0),
+        opacity(0.18),
+        fixed(),
+        z(98),
+        "dark_overlay"
+    ]);
+}
 
 export function voteScene() {
     scene("vote", () => {
+        addDarkOverlay();
         let gameData = loadGameData();
 
         onLoad(() => {
@@ -42,7 +50,7 @@ export function voteScene() {
 
             return `
             💰 ${money}         💎 ${diamonds}
-            🗳️ ${votes}         🔋 ${Math.floor(energy)}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
+            🗳️ ${Math.floor(votes)}         🔋 ${Math.floor(energy)}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
             `.replace(/\n\s+/g, '\n').trim();
         };
 
@@ -158,7 +166,7 @@ export function voteScene() {
                             }
                             
                             let chance = upgrades.chance_crete.value(gameData.character.chance_crete) * gameData.character.boost.crete >= Math.random()
-                            let click = upgrades.click_boost.value(gameData.character.click_boost) * gameData.character.boost.click
+                            let click = upgrades.click_boost.value(gameData.character.click_boost) * gameData.character.boost.click / 2.3
                             if (click - gameData.character.energy >= 0) {
                                 gameData.character.votes += gameData.character.energy;
                                 gameData.character.energy = 0          
@@ -181,6 +189,10 @@ export function voteScene() {
 
 
 
+
+    loop(1, () => {
+        spawnRain(gameData.character.is_rain, WIDTH, HEIGHT);
+    });
 
     loop(0.5, () => {
         stateLabel.text = stateText()

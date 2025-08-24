@@ -5,6 +5,7 @@ import { profitupgradeScene } from './scenes/profit.js';
 import { buttons_game, button_profit, button_passive } from './constants.js';
 import { updatestateScene } from './scenes/update.js';
 import { voteScene } from './scenes/vote.js';
+import { settingScene } from './scenes/setting.js'; // добавить импорт
 
 const k = kaboom({
     width: WIDTH,
@@ -60,12 +61,13 @@ loadSprite("rain", "../sprites/icon/rain.png", {
         "fall": {
             from: 0,
             to: 3,
-            speed: 12,
+            speed: 5,
             loop: true
         }
     }
 });
 
+loadSprite('simple_rain', '../sprites/icon/rain_simple.png')
 
 loadSprite("coin", "sprites/icon/coin_am.png", {
     sliceX: 3,  // 3 колонки
@@ -153,6 +155,7 @@ passiveincomeScene();
 profitupgradeScene();
 updatestateScene();
 voteScene();
+settingScene(); // добавить инициализацию
 mainScene();
 go("main");
 

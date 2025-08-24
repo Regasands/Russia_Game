@@ -209,10 +209,22 @@ export function change_boost_character(gameData){
     gameData.character.boost = boost;
 };
 
+// Добавляем функцию для затемняющего слоя
+function addDarkOverlay() {
+    add([
+        rect(width(), height()),
+        color(0, 0, 0),
+        opacity(0.18), // Лёгкое затемнение
+        fixed(),
+        z(98),
+        "dark_overlay"
+    ]);
+}
     
 
 export function mainScene() {
     scene("main", () => {
+        addDarkOverlay();
         let gameData = loadGameData();
 
         onLoad(() => {
@@ -305,7 +317,7 @@ export function mainScene() {
 
             return `
             💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}/день    
-            🗳️ ${votes}    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
+            🗳️ ${Math.floor(votes)}    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
               📅 ${days}                                   ⏳ ${time_game}:00
             `.replace(/\n\s+/g, '\n').trim();
         };
@@ -352,9 +364,11 @@ export function mainScene() {
                     go('profit')
                 } else if (buttons_game[i] == 'update') {
                     go('update_state')
-                } else if (buttons_game[i] == 'vote') [
+                } else if (buttons_game[i] == 'vote') {
                     go('vote')
-                ]
+                } else if (buttons_game[i] == 'setting') {
+                    go('setting')
+                }
              });
 
 
@@ -372,7 +386,8 @@ export function mainScene() {
         loop(0.5, () => {
 
             stateLabel.text = stateText();
-
+            gameData.character.energy += upgrades.energy_recovery.value(gameData.character.energy_recovery) * gameData.character.boost.energy_recovery / 48;
+            gameData.character.energy = Math.min(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max, gameData.character.energy);
             for (let i = 0; i < 5; i ++) {
                 let obj = passive_income.investments[i]
                 let obj_ch = gameData.character_passive.investments[i]
@@ -401,26 +416,7 @@ export function mainScene() {
         let secondTimer;
 
         secondTimer = loop(1, () => {
-            if (gameData.character.is_rain){
-                for (let i = 0; i < 10; i ++) {
-                    var rain = add([
-                        sprite("rain", { anim: "fall" }),
-                        pos(rand(0, WIDTH), -10),
-                        area(),
-                        scale(0.09),
-                        opacity(0.2),
-                        move(DOWN, rand(100, 200)),
-                        anchor("center"),
-                        "rain",
-                    ]);
-                    rain.play('fall')
-                    rain.onUpdate(() => {
-                        if (rain.pos.y > HEIGHT + 10) {
-                            destroy(rain);
-                        }
-                });
-                }
-            }
+            spawnRain(gameData.character.is_rain, WIDTH, HEIGHT);
 
             updateDayNight(gameData.character.time_game);
             gameData.character.time_game = (gameData.character.time_game + 1) % 24
@@ -444,8 +440,6 @@ export function mainScene() {
             }
             gameData.character.votes -=  Math.floor((gameData.character.days * 2) ** 1.3)
 
-            gameData.character.energy += upgrades.energy_recovery.value(gameData.character.energy_recovery) * gameData.character.boost.energy_recovery;
-            gameData.character.energy = Math.min(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max, gameData.character.energy);
 
 
 
@@ -465,4 +459,29 @@ export function mainScene() {
 
 
     });  // ← Конец callback-функции сцены
+}
+
+export function spawnRain(isRain, WIDTH, HEIGHT) {
+    if (!isRain) return;
+    
+    for (let i = 0; i < 10; i++) {
+        var rain = add([
+            sprite("simple_rain"),
+            pos(rand(0, WIDTH), -50),
+            scale(0.09),
+            opacity(0.2),
+            anchor("center"),
+            offscreen({ destroy: true }),
+            move(DOWN, rand(50, 200)),
+            "rain",
+            {
+                speedX: 5,
+            }
+        ]);
+
+        rain.onUpdate(() => {
+            console.log(rain.pos.y);
+            rain.pos.x += rain.speedX ;
+        });
+    }
 }

@@ -10,15 +10,23 @@ import {
 } from "../constants.js"
 import { loadGameData, saveGameData } from "../gameStorge.js";
 import { delcard  } from "./passive.js";
-import { makeOrnateFrame, animation_scale_obj, change_boost_character } from "./main.js"
+import { makeOrnateFrame, animation_scale_obj, change_boost_character, spawnRain } from "./main.js"
 import { create_card_boost_list, create_card_hero_background, create_card_upgrade, create_exchanger_card } from "../card.js";
 
-
-
-
+function addDarkOverlay() {
+    add([
+        rect(width(), height()),
+        color(0, 0, 0),
+        opacity(0.18),
+        fixed(),
+        z(98),
+        "dark_overlay"
+    ]);
+}
 
 export function profitupgradeScene() {
     scene('profit', () => {
+        addDarkOverlay();
         let gameData = loadGameData();
         let cardlist = []
         let currentIndex_hero = 0
@@ -317,6 +325,5 @@ export function profitupgradeScene() {
         loop(0.5, () => {
             stateLabel.text = stateText();
         });
-
 
     })};

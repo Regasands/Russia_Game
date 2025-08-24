@@ -8,8 +8,19 @@ import {
 } from "../constants.js";
 import { loadGameData, saveGameData } from "../gameStorge.js";
 import { createCard, create_invest_card } from "../card.js";
-import { makeOrnateFrame, getPassiveIncome, animation_scale_obj } from "./main.js";
+import { makeOrnateFrame, getPassiveIncome, animation_scale_obj, spawnRain } from "./main.js";
 
+
+function addDarkOverlay() {
+    add([
+        rect(width(), height()),
+        color(0, 0, 0),
+        opacity(0.18),
+        fixed(),
+        z(98),
+        "dark_overlay"
+    ]);
+}
 
 export function delcard(cardlist) {
     if (!cardlist || !Array.isArray(cardlist)) return;
@@ -28,6 +39,8 @@ export function delcard(cardlist) {
 //САМА СЦЕНА
 export function passiveincomeScene () {
     scene("passive", () => {
+        addDarkOverlay();
+
         let gameData = loadGameData();
 
         onLoad(() => {
@@ -289,6 +302,10 @@ export function passiveincomeScene () {
 
         
         // циклы игровый loop
+        loop(1, () => {
+            spawnRain(gameData.character.is_rain, WIDTH, HEIGHT);
+        });
+
         loop(0.5, () => {
             stateLabel.text = stateText();
         });

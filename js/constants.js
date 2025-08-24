@@ -28,10 +28,8 @@ export const character = {
     energy_max: 0,
     energy_recovery: 0,
 
-
     // временные баффы
 
-    hungry_gap: 10,
 
     
     // Прогресс
@@ -51,6 +49,7 @@ export const character = {
 
     id_character: 0,
     id_background: 0,
+    is_ru: true,
     is_rain: true,
     
     // Состояния

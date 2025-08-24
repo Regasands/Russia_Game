@@ -934,3 +934,157 @@ export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
     cardlist.push(card);
     return card;
 }
+
+
+export function create_settings_window(character_data, cardlist,  isRu, end_warning) {
+    const style = {
+        color: rgb(50, 50, 80),
+        outline: rgb(255, 160, 122), 
+        textColor: rgb(255, 255, 255), 
+        highlightColor: rgb(255, 215, 0), 
+        sectionColor: rgb(60, 60, 90),
+        buttonColor: rgb(70, 130, 180),
+        buttonHover: rgb(100, 160, 210)
+    };
+
+    // Основное окно настроек
+    const window = add([
+        rect(WIDTH * 0.8, HEIGHT * 0.6, { radius: 16 }),
+        area(),
+        pos(WIDTH / 2, HEIGHT / 2),
+        anchor("center"),
+        color(style.color),
+        outline(4, style.outline),
+        opacity(0.6),
+        z(200),
+        fixed(),
+        "settings_window"
+    ]);
+
+    // Заголовок
+    window.add([
+        text("⚙️ Настройки", {
+            size: 32,
+            font: "sans-serif",
+        }),
+        pos(0, -HEIGHT * 0.25),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+
+    window.add([
+        text("💰 Всего заработано за всё время:", {
+            size: 22,
+            font: "sans-serif",
+        }),
+        pos(-200, -120),
+        anchor("left"),
+        color(style.textColor)
+    ]);
+
+    window.add([
+        text(`${Math.floor(character_data.character.total_earned)}`, {
+            size: 24,
+            font: "sans-serif",
+        }),
+        pos(-150 , -100),
+        anchor("right"),
+        color(style.highlightColor)
+    ]);
+
+    // Кнопка выбора языка
+    const languageBtn = window.add([
+        rect(250, 50, { radius: 8 }),
+        pos(0, 0),
+        anchor("center"),
+        area(),
+        color(style.buttonColor),
+        opacity(!isRu ? 0.3 : 1),
+        outline(2, style.outline),
+        "language_button",
+        { 
+            choose: isRu
+        }
+    ]);
+
+    languageBtn.add([
+        text("Русский", { size: 22 }),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+    // Кнопка выбора языка
+
+    const languageEnBtn = window.add([
+        rect(250, 50, { radius: 8 }),
+        pos(0, 50),
+        anchor("center"),
+        area(),
+        color(style.buttonColor),
+        opacity(isRu ? 0.3 : 1),
+        outline(2, style.outline),
+        "language_button",
+        { 
+            choose: !isRu
+        }
+    ]);
+
+    languageEnBtn.add([
+        text("English", { size: 22 }),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Обработчики для кнопки языка
+
+    const deleteBtn = window.add([
+        rect(300, 50, { radius: 8 }),
+        pos(0, HEIGHT * 0.15),
+        anchor("center"),
+        area(),
+        color(end_warning === 1 ? (255, 0, 0) : style.buttonColor),
+        outline(2, style.outline),
+        "delete_button",
+        { 
+            end_warning: end_warning
+        }
+    ]);
+
+    deleteBtn.add([
+        text('🗑️ Удалить игру', {
+            size: 20,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+
+    const rainToggle = window.add([
+        rect(300, 50, { radius: 8 }),
+        pos(0, HEIGHT * 0.25),
+        anchor("center"),
+        area(),
+        color(character_data.character.is_rain ? rgb(65, 105, 225) : rgb(100, 100, 100)),
+        outline(2, style.outline),
+        "rain_toggle",
+    ]);
+
+    rainToggle.add([
+        text(character_data.character.is_rain ? "☔ Дождь: ВКЛ" : "☔ Дождь: ВЫКЛ", {
+            size: 20,
+            font: "sans-serif",
+            width: WIDTH - 60,
+            align: "center",
+            lineSpacing: 6
+        }),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+
+    cardlist.push(window);
+}
