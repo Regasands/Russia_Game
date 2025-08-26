@@ -403,6 +403,11 @@ export function mainScene() {
                     obj_ch.delay -= 1;
                 }
             }
+
+            if (gameData.character.votes < 30 ) {
+                go('endgame')
+            }
+
             saveGameData(gameData);
         });
 
@@ -472,10 +477,5 @@ export function spawnRain(isRain, WIDTH, HEIGHT) {
                 speedX: 5,
             }
         ]);
-
-        rain.onUpdate(() => {
-            console.log(rain.pos.y);
-            rain.pos.x += rain.speedX ;
-        });
     }
 }

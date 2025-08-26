@@ -1,6 +1,7 @@
 import { loadGameData, saveGameData } from "../gameStorge.js";
 import { WIDTH, HEIGHT, buttons_game, BUTTONSIZE } from "../constants.js";
 
+
 function addWakeUpEffect() {
     // Затемняющий слой
     add([
@@ -62,7 +63,7 @@ function typeWrite(textt, all_text = false) {
         talk.stop();
     }
     talk = play('talk_hero', {
-        volume: 0.4,
+        volume: 0.4, 
         speed: 0.9,
         loop: true,
     });
@@ -114,19 +115,12 @@ function showArrowIfNeeded(index, btns) {
 
 
 // Новый асинхронный экспорт функции trainScenee
-export function trainScenee(data, track1) {
-    track1.stop();
+export function trainScenee(data) {
     scene('train', () => {
-        let track2 = play("train_music", {
-            volume: 0.2,
-        });
-
-        track1.play();
-
-
         let index = 0;
         addWakeUpEffect();
         let gameData = loadGameData();
+        const userLang = gameData.character.is_ru ? "ru" : "eng";
         console.log(data)
         add([
             sprite(`background_${gameData.character.id_background}`),
@@ -168,7 +162,7 @@ export function trainScenee(data, track1) {
         }
         
 
-        let currentCard = typeWrite(data.train_hero.message[String(index)].text.ru);
+        let currentCard = typeWrite(data.train_hero.message[String(index)].text[userLang]);
         showArrowIfNeeded(index, btns);
 
         let doubleclick = 0;
@@ -177,20 +171,19 @@ export function trainScenee(data, track1) {
         onClick('hero_train', () => {
             if (finished) return;
             doubleclick++;
-            // Удаляем стрелку при любом клике
             get("arrow_indicator").forEach(destroy);
 
             if (doubleclick === 1) {
                 destroy(currentCard[0]);
                 if (currentCard[1]) clearInterval(currentCard[1]);
-                currentCard = typeWrite(data.train_hero.message[String(index)].text.ru, true);
+                currentCard = typeWrite(data.train_hero.message[String(index)].text[userLang], true);
                 showArrowIfNeeded(index, btns);
             } else if (doubleclick === 2) {
                 destroy(currentCard[0]);
                 if (currentCard[1]) clearInterval(currentCard[1]);
                 index++;
                 if (index < Object.keys(data.train_hero.message).length) {
-                    currentCard = typeWrite(data.train_hero.message[String(index)].text.ru);
+                    currentCard = typeWrite(data.train_hero.message[String(index)].text[userLang]);
                     showArrowIfNeeded(index, btns);
                     doubleclick = 0;
                 } else {
@@ -198,8 +191,6 @@ export function trainScenee(data, track1) {
                     gameData.character.is_first_game = false;
                     saveGameData(gameData);
                     wait(0.2, () => {
-                        track2.stop();
-                        track1.play();
                         go("main");
                     });
                 }

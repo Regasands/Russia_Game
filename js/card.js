@@ -1088,3 +1088,86 @@ export function create_settings_window(character_data, cardlist,  isRu, end_warn
 
     cardlist.push(window);
 }
+
+
+export function create_end_window(isRu, cardlist) {
+    const style = {
+        color: rgb(50, 50, 80),
+        outline: rgb(255, 160, 122), 
+        textColor: rgb(255, 255, 255), 
+        highlightColor: rgb(255, 215, 0), 
+        sectionColor: rgb(60, 60, 90),
+        buttonColor: rgb(70, 130, 180),
+        buttonHover: rgb(100, 160, 210),
+        errorColor: rgb(220, 20, 60)
+    };
+
+    // Основное окно конца игры
+    const window = add([
+        rect(WIDTH * 0.7, HEIGHT * 0.5, { radius: 16 }),
+        area(),
+        pos(WIDTH / 2, HEIGHT / 2),
+        anchor("center"),
+        color(style.color),
+        outline(4, style.outline),
+        opacity(0.8),
+        z(200),
+        fixed(),
+        "end_window"
+    ]);
+
+    // Заголовок (сообщение о проигрыше)
+    window.add([
+        text(isRu ? "💀 О нет, вы проиграли!" : "💀 Oh no, you lost!", {
+            size: 36,
+            font: "sans-serif",
+        }),
+        pos(0, -HEIGHT * 0.15),
+        anchor("center"),
+        color(style.errorColor)
+    ]);
+
+    // Дополнительное сообщение
+    window.add([
+        text(isRu ? "Но вы можете попробовать снова!" : "But you can try again!", {
+            size: 24,
+            font: "sans-serif",
+        }),
+        pos(0, -HEIGHT * 0.05),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Кнопка начать заново
+    const restartBtn = window.add([
+        rect(300, 60, { radius: 8 }),
+        pos(0, HEIGHT * 0.1),
+        anchor("center"),
+        area(),
+        color(style.buttonColor),
+        outline(3, style.outline),
+        "restart_button"
+    ]);
+
+    restartBtn.add([
+        text(isRu ? "🔄 Начать заново" : "🔄 Start Over", {
+            size: 26,
+            font: "sans-serif",
+        }),
+        anchor("center"),
+        color(style.textColor)
+    ]);
+
+    // Добавляем окно в cardlist
+    cardlist.push(window);
+
+    // Возвращаем кнопку для обработки клика
+    return restartBtn;
+}
+
+// Пример использования:
+// const restartBtn = create_end_window(isRu, cardlist);
+// restartBtn.onClick(() => {
+//     // Перезапуск игры
+//     go("main");
+// });

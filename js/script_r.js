@@ -6,9 +6,9 @@ import { buttons_game, button_profit, button_passive } from './constants.js';
 import { updatestateScene } from './scenes/update.js';
 import { voteScene } from './scenes/vote.js';
 import { settingScene } from './scenes/setting.js'; // добавить импорт
-import { loadGameData } from './gameStorge.js';
+import { loadGameData, saveGameData } from './gameStorge.js';
 import { trainScenee } from './scenes/train_scene.js';
-
+import { endGame } from './scenes/endGame.js';
 
 const k = kaboom({
     width: WIDTH,
@@ -24,11 +24,11 @@ const k = kaboom({
 // загрузка фоновых персонажей
 loadSprite("hero_train", `../sprites/character_back/train.png`)
 
-// загруз для обучения 
+// загрузка для обучения 
 loadSprite('arrow', '../sprites/icon/arrow.png')
 
 
-loadSound('train_music', 'sounds/background_sounds/train_music.mp3')
+// loadSound('train_music', 'sounds/background_sounds/train_music.mp3')
 
 
 
@@ -154,10 +154,10 @@ for (let i = 1; i < button_passive.length; i++) {
 
 
 // Загрузка аудиофайлов
-loadSound("bg2", "sounds/background_sounds/8.mp3");
+loadSound("bg2", "sounds/background_sounds/train_music.mp3");
 
 // Запуск всех треков с loop
-const track1 = play("bg2", {
+export const track1 = play("bg2", {
     volume: 0.2,
     speed: 0.8,
     loop: true
@@ -166,19 +166,41 @@ const track1 = play("bg2", {
 
 
 
+
+// Определяем язык пользователя (ru/en)
+function getUserLang() {
+    const lang = (navigator.language || navigator.userLanguage || "ru").toLowerCase();
+    console.log(navigator.language, navigator.userLanguage, lang,  ';i')   
+    if (lang.startsWith("ru")) return "ru";
+    if (lang.startsWith("en")) return "en";
+    return "ru";
+}
+
 // Загружаем все сюжетное и только после этого запускаем сцены
 loadJSON("messages", "../message/convers/main.json")
     .then(data => {
         console.log("messages loaded", data);
 
+        let gameData = loadGameData();
+        console.log(getUserLang());
+        if (getUserLang() == 'en'){
+            gameData.character.is_ru = false;
+        }
+        else {
+            gameData.character.is_ru = true;
+        }
+        saveGameData(gameData);
+        
+
         passiveincomeScene();
+        endGame();
         profitupgradeScene();
         updatestateScene();
         voteScene();
         settingScene();
         mainScene();
-        if (loadGameData().character.is_first_game) {
-            trainScenee(data, track1); // передаём data напрямую
+        if (gameData.character.is_first_game) {
+            trainScenee(data);
             go("train");
         } else {
             go("main");
