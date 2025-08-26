@@ -14,7 +14,7 @@ export const wait_enimation = 0.05
 
 export const character = {
     // Базовые ресурсы
-    money: 100,
+    money: 180,
     diamonds: 10,
     reputation: 0,
     energy: 200, 

@@ -93,7 +93,7 @@ export function voteScene() {
 
         function render_card(obj) {
             for (let key = 0; key < Object.keys(obj).length; key ++) {
-                create_vote_project_card(obj[key], WIDTH / 2, key * 150 + 170, cardlist)
+                create_vote_project_card(obj[key], WIDTH / 2, key * 150 + 170, cardlist, gameData.character.is_ru)
                 onClick(`vote_project_${obj[key].name}`, (btn) => {
                     animation_scale_obj(btn, 0.9, 1)
                     if (gameData.character.money >= obj[key].cost_open && !obj[key].character_open) {
@@ -180,7 +180,7 @@ export function voteScene() {
                 
                     } else if (button_vote[i] == 'boost') {
                         for (let key = 0; key < Object.keys(passsive_vote_boost).length; key ++) {
-                            create_vote_boost_card(passsive_vote_boost[key], WIDTH / 2, key * 150 + 170, cardlist, gameData.character.votes)
+                            create_vote_boost_card(passsive_vote_boost[key], WIDTH / 2, key * 150 + 170, cardlist, gameData.character.votes, gameData.character.is_ru)
                         }
                     }
                 });

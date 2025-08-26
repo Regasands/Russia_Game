@@ -96,7 +96,8 @@ export function profitupgradeScene() {
                         cardlist,  
                         isMaxLevel,
                         level,
-                        key
+                        key,
+                        gameData.character.is_ru
                     ); 
                 }
 
@@ -159,7 +160,7 @@ export function profitupgradeScene() {
                 } else if (currentIndex_hero < 0){
                     currentIndex_hero =  Object.keys(heroes_info).length - 1
                 }
-                create_card_hero_background(currentIndex_hero, 'hero', cardlist)
+                create_card_hero_background(currentIndex_hero, 'hero', cardlist, gameData.character.is_ru, gameData)
 
             } else {
                 currentIndex_background = currentIndex_background + type
@@ -168,7 +169,7 @@ export function profitupgradeScene() {
                 } else if (currentIndex_background < 0){
                     currentIndex_background =  Object.keys(heroes_info).length - 1
                 }
-                create_card_hero_background(currentIndex_background, 'background', cardlist)
+                create_card_hero_background(currentIndex_background, 'background', cardlist, gameData.character.is_ru, gameData)
             }
 
             })
@@ -188,11 +189,11 @@ export function profitupgradeScene() {
                 if (btn.type == 'hero'){
                     gameData.character.diamonds -= heroes_info[btn.index].price
                     gameData.character_open_hero[btn.index].is_open = true;
-                    create_card_hero_background(btn.index, 'hero', cardlist)
+                    create_card_hero_background(btn.index, 'hero', cardlist, gameData.character.is_ru, gameData)
                 } else {
                     gameData.character.diamonds -= backgrounds_info[btn.index].price
                     gameData.character_open_background[btn.index].is_open = true;
-                    create_card_hero_background(btn.index, 'background', cardlist)
+                    create_card_hero_background(btn.index, 'background', cardlist, gameData.character.is_ru, gameData)
                 }
                 saveGameData(gameData);
             })
@@ -209,7 +210,7 @@ export function profitupgradeScene() {
                         gameData.character_open_background[index].is_wear = true
                         gameData.character.id_background = index
                         delcard(cardlist)
-                        create_card_hero_background(btn.index, 'background', cardlist)
+                        create_card_hero_background(btn.index, 'background', cardlist, gameData.character.is_ru, gameData)
                     }
                 } else {
                     var index = btn.index
@@ -220,7 +221,7 @@ export function profitupgradeScene() {
                         gameData.character_open_hero[index].is_wear = true
                         gameData.character.id_character = index
                         delcard(cardlist)
-                        create_card_hero_background(btn.index, 'hero', cardlist)
+                        create_card_hero_background(btn.index, 'hero', cardlist, gameData.character.is_ru, gameData)
                     }
                 }
                 saveGameData(gameData);
@@ -305,12 +306,13 @@ export function profitupgradeScene() {
                 if (button_profit[i] == 'upgrade') {
                     render_card(upgrades, button_profit[i])
                 } else if (button_profit[i] == 'new_character') {
-                    create_card_hero_background(currentIndex_hero, 'hero', cardlist)
+                        create_card_hero_background(currentIndex_hero, 'hero', cardlist, gameData.character.is_ru, gameData)
                 } else if (button_profit[i] == 'new_background') {
-                    create_card_hero_background(currentIndex_background, 'background', cardlist)
+                        create_card_hero_background(currentIndex_background, 'background', cardlist, gameData.character.is_ru, gameData)
                 } else if (button_profit[i] == 'new_event') {
                     change_boost_character(gameData)
-                    create_card_boost_list(gameData.character.boost, cardlist)
+                    console.log(gameData.character.boost)
+                    create_card_boost_list(gameData.character.boost, cardlist, gameData.character.is_ru)
                 } else if (button_profit[i] == 'exchanger') {
                     create_exchanger_card(cardlist, gameData.character.cost_diamond)
                 }

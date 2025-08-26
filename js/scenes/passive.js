@@ -142,7 +142,7 @@ export function passiveincomeScene () {
                     cost = isMaxLevel ? "MAX" : Math.round(obj[i2].cost(level + 1));
                 }
                 if (character_part == 'investments' ){
-                    create_invest_card(obj[i2], WIDTH / 2, y - 20, global_card, i2)
+                    create_invest_card(obj[i2], WIDTH / 2, y - 20, global_card, i2, gameData.character.is_ru, gameData)
 
                 } else if (i2 == 0 || gameData.character_passive[character_part][i2 - 1] > 0){
                     createCard(obj[i2],
@@ -150,7 +150,7 @@ export function passiveincomeScene () {
                         isMaxLevel,
                         cost,
                         WIDTH / 2 , 
-                        y, global_card, character_part)
+                        y, global_card, character_part, gameData.character.is_ru)
                 } else {
                     const card = add([
                         sprite('block_button'),

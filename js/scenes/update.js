@@ -83,7 +83,7 @@ export function updatestateScene() {
         });
 
         Object.keys(time_boost).forEach((key) => {
-           create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist)
+           create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist, gameData.character.is_ru)
             onClick(`boost_button_${time_boost[key].name}`, (btn) => {
                 animation_scale_obj(btn, 0.9, 1)
                 wait(0.1, () => {

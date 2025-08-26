@@ -1,4 +1,3 @@
-
 import {
     HEIGHT,
     WIDTH,
@@ -13,9 +12,8 @@ import {
 // в идеале это конечно все упростить но этим я буду заниматься очень не скоро. вначале хочу сделать основную логику.
 // запустить игру в бета релиз
 // Создание карточек для пасивного дохода сценаи passive 
-export function create_invest_card(obj, x, y, cardlist, index) {
+export function create_invest_card(obj, x, y, cardlist, index, isRu, gameData) {
     const style = global_style.investment
-
 
     let card = add([
         rect(WIDTH, HEIGHT / 10, { radius: 10 }),
@@ -36,21 +34,24 @@ export function create_invest_card(obj, x, y, cardlist, index) {
         lineSpacing: 8
     }
 
+    // Используем перевод
     card.add([
-        text(obj.name, data),
+        text(isRu ? obj.name : (obj.name_eng || obj.name), data),
         pos(0, -50),
         anchor('center'),
         color(style.textColor)
     ])
     card.add([
-        text(`Описание: ${obj.description}`, data),
+        text(isRu ? `Описание: ${obj.description}` : `Description: ${obj.description_eng || obj.description}`, data),
         pos(-10, -20),
         color(style.textColor),
         anchor('center'),
     ])
-    let obj2 = character_passive.investments[index]
+    let obj2 = gameData.character_passive.investments[index]
     card.add([
-        text(`Цена: ${Math.floor(obj2.current_price)} / Количество у вас ${obj2.count}`, data),
+        text(isRu
+            ? `Цена: ${Math.floor(obj2.current_price)} / Количество у вас ${obj2.count}`
+            : `Price: ${Math.floor(obj2.current_price)} / You have ${obj2.count}`, data),
         pos(-10, 10),
         color(style.textColor),
         anchor('center'),
@@ -72,7 +73,7 @@ export function create_invest_card(obj, x, y, cardlist, index) {
         ])
 
     buyBtn.add([
-        text('Купить', data),
+        text(isRu ? 'Купить' : 'Buy', data),
         color(style.textColor),
         pos(-30, -10)
     ])
@@ -91,7 +92,7 @@ export function create_invest_card(obj, x, y, cardlist, index) {
         }
     ])
     seelBtn.add([
-        text('Продать', data),
+        text(isRu ? 'Продать' : 'Sell', data),
         color(style.textColor),
         pos(-40, -10)
     ])
@@ -101,7 +102,7 @@ export function create_invest_card(obj, x, y, cardlist, index) {
 }
 
 
-export function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist, character_part) {
+export function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist, character_part, isRu) {
         const currentIncome =  Math.round(obj.income(level));
         let nextIncome = isMaxLevel ? null : Math.round(obj.income(level + 1));
         let card;
@@ -133,7 +134,7 @@ export function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist
         // Название объекта с иконкой
 
         card.add([
-            text(`${style.icon} ${obj.name}`, {
+            text(`${style.icon} ${isRu ? obj.name : (obj.name_eng || obj.name)}`, {
                 size: 28,
                 font: "sans-serif",
                 width: WIDTH - 80,
@@ -149,26 +150,31 @@ export function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist
         // Остальные элементы с тематическим цветом текста
         const elements = [
             {
-                text: `Описание: ${obj.description}`,
+                text: isRu ? `Описание: ${obj.description}` : `Description: ${obj.description_eng || obj.description}`,
                 pos: [-10, -20],
                 size: 18,
                 align: "left"
             },
             {
-                text: `Уровень: ${level}${isMaxLevel ? " (MAX)" : ""}`,
+                text: isRu
+                    ? `Уровень: ${level}${isMaxLevel ? " (MAX)" : ""}`
+                    : `Level: ${level}${isMaxLevel ? " (MAX)" : ""}`,
                 pos: [244, 30],
                 size: 18,
                 align: "left"
             },
             {
-                text: isMaxLevel ? "Макс. уровень достигнут" : `Цена улучшения: ${current_cost}`,
+                text: isMaxLevel
+                    ? (isRu ? "Макс. уровень достигнут" : "Max level reached")
+                    : (isRu ? `Цена улучшения: ${current_cost}` : `Upgrade cost: ${current_cost}`),
                 pos: [240, 0],
                 size: 18,
                 align: "left"
             },
             {
-                text: `Текущий доход: ${currentIncome}` + 
-                    (isMaxLevel ? "" : `\nСледующий доход: ${nextIncome}`),
+                text: isRu
+                    ? `Текущий доход: ${currentIncome}` + (isMaxLevel ? "" : `\nСледующий доход: ${nextIncome}`)
+                    : `Current income: ${currentIncome}` + (isMaxLevel ? "" : `\nNext income: ${nextIncome}`),
                 pos: [-5, 20],
                 size: 18,
                 align: "left"
@@ -198,7 +204,7 @@ export function createCard(obj, level, isMaxLevel,  current_cost, x, y, cardlist
 
 // создание карт для улучшения персонажа profit
 
-export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, type){
+export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, type, isRu){
     let current_boost
     let next_boost
         if (obj.name == 'Золотая пшеница') {
@@ -232,7 +238,7 @@ export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, typ
         // Название объекта с иконкой
 
         card.add([
-            text(`${style.icon} ${obj.name}`, {
+            text(`${style.icon} ${isRu ? obj.name : (obj.name_eng || obj.name)}`, {
                 size: 28,
                 font: "sans-serif",
                 width: WIDTH - 80,
@@ -248,26 +254,31 @@ export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, typ
         // Остальные элементы с тематическим цветом текста
         const elements = [
             {
-                text: `Описание: ${obj.description}`,
+                text: isRu ? `Описание: ${obj.description}` : `Description: ${obj.description_eng || obj.description}`,
                 pos: [-10, -20],
                 size: 18,
                 align: "left"
             },
             {
-                text: `Уровень: ${level}${isMaxLevel ? " (MAX)" : ""}`,
+                text: isRu
+                    ? `Уровень: ${level}${isMaxLevel ? " (MAX)" : ""}`
+                    : `Level: ${level}${isMaxLevel ? " (MAX)" : ""}`,
                 pos: [244, 30],
                 size: 18,
                 align: "left"
             },
             {
-                text: isMaxLevel ? "Макс. уровень достигнут" : `Цена улучшения: ${current_cost}`,
+                text: isMaxLevel
+                    ? (isRu ? "Макс. уровень достигнут" : "Max level reached")
+                    : (isRu ? `Цена улучшения: ${current_cost}` : `Upgrade cost: ${current_cost}`),
                 pos: [240, 0],
                 size: 18,
                 align: "left"
             },
             {
-                text: `Текущий буст: ${current_boost}` + 
-                    (isMaxLevel ? "" : `\nСледующий буст: ${next_boost}`),
+                text: isRu
+                    ? `Текущий буст: ${current_boost}` + (isMaxLevel ? "" : `\nСледующий буст: ${next_boost}`)
+                    : `Current boost: ${current_boost}` + (isMaxLevel ? "" : `\nNext boost: ${next_boost}`),
                 pos: [-5, 20],
                 size: 18,
                 align: "left"
@@ -296,23 +307,26 @@ export function  create_card_upgrade(obj, x, y, cardlist, isMaxLevel, level, typ
 
 
 
-export function create_card_hero_background(index, type, cardlist) {
+export function create_card_hero_background(index, type, cardlist, isRu, gameData) {
     let obj
     let is_open
     let is_wear
-
     if (type == 'hero') {
         obj = heroes_info[index]; 
-        is_open = character_open_hero[index].is_open;
-        is_wear = character_open_hero[index].is_wear;
+        is_open = gameData.character_open_hero[index].is_open;
+        is_wear = gameData.character_open_hero[index].is_wear;
     } else {
         obj = backgrounds_info[index]; 
-        is_open = character_open_background[index].is_open;
-        is_wear = character_open_background[index].is_wear
+        is_open = gameData.character_open_background[index].is_open;
+        is_wear = gameData.character_open_background[index].is_wear
     };
 
 
-    const text_1 = !is_open ? `Купить за ${obj.price} кристаллов` : !is_wear ? 'Надеть': 'Уже используется';
+    const text_1 = !is_open
+        ? (isRu ? `Купить за ${obj.price} кристаллов` : `Buy for ${obj.price} crystals`)
+        : !is_wear
+            ? (isRu ? 'Надеть' : 'Wear')
+            : (isRu ? 'Уже используется' : 'Already equipped');
 
     
 
@@ -357,7 +371,7 @@ export function create_card_hero_background(index, type, cardlist) {
 
     // Описание персонажа
     textFrame.add([
-        text(obj.description, {
+        text(isRu ? obj.description : (obj.description_eng || obj.description), {
             size: 20,
             font: "regular",
             width: WIDTH - 80,
@@ -481,8 +495,7 @@ export function create_card_hero_background(index, type, cardlist) {
     cardlist.push(mainBtn, card, object_vision, nextBtn, prevBtn)
 }
 
-export function create_card_boost_list(boosts, listcard) {
-
+export function create_card_boost_list(boosts, listcard, isRu) {
     // Конфигурация дисплея бустов
     var boostsDisplay = {
         frame: {
@@ -497,12 +510,12 @@ export function create_card_boost_list(boosts, listcard) {
             color: rgb(255, 215, 0),
         },
         boostsList: [
-            { icon: "🍀",  name: "Удача",         key: "luck",             suffix: "%",   transform: (v) => v * 100 },
-            { icon: "🖱️",  name: "Сила клика",    key: "click",            suffix: "x" },
-            { icon: "💥",  name: "Крит. удар",    key: "crete",            suffix: "x" },
-            { icon: "🏭",  name: "Пассив. доход", key: "income",           suffix: "x" },
-            { icon: "🔋",  name: "Макс. энергия", key: "energy_max",       suffix: "x" },
-            { icon: "🔄",  name: "Регенерация",   key: "energy_recovery",  suffix: "x" }
+            { icon: "🍀",  name: isRu ? "Удача" : "Luck",         key: "luck",             suffix: "%",   transform: (v) => v * 100 },
+            { icon: "🖱️",  name: isRu ? "Сила клика" : "Click",   key: "click",            suffix: "x" },
+            { icon: "💥",  name: isRu ? "Крит. удар" : "Crit",    key: "crete",            suffix: "x" },
+            { icon: "🏭",  name: isRu ? "Пассив. доход" : "Passive", key: "income",        suffix: "x" },
+            { icon: "🔋",  name: isRu ? "Макс. энергия" : "Max Energy", key: "energy_max", suffix: "x" },
+            { icon: "🔄",  name: isRu ? "Регенерация" : "Regen",  key: "energy_recovery",  suffix: "x" }
         ],
         // Стиль текста
         textStyle: {
@@ -528,7 +541,7 @@ export function create_card_boost_list(boosts, listcard) {
 
     // 2. Добавляем заголовок
     boostFrame.add([
-        text("🚀 Активные бусты", {
+        text(isRu ? "🚀 Активные бусты" : "🚀 Active Boosts", {
             size: boostsDisplay.title.size,
             color: boostsDisplay.textStyle.color,
             font: boostsDisplay.textStyle.font
@@ -540,23 +553,20 @@ export function create_card_boost_list(boosts, listcard) {
 
     boostsDisplay.boostsList.forEach((boost, i) => {
         var yPos = -120 + i * 50;
-        
-        const boostText = boostFrame.add([
-            text(`${boost.icon} ${boost.name}: ${Math.floor(boosts[boost.key])}${boost.suffix}`, {
+        const value = boost.transform ? boost.transform(boosts[boost.key]) : boosts[boost.key];
+        boostFrame.add([
+            text(`${boost.icon} ${boost.name}: ${Math.floor(value)}${boost.suffix}`, {
                 size: boostsDisplay.textStyle.size,
                 color: boostsDisplay.textStyle.color,
                 font: boostsDisplay.textStyle.font
             }),
             pos(0, yPos),
             anchor("center"),
-            { boostKey: boost.key } // Сохраняем ключ для обновления
+            { boostKey: boost.key }
         ]);
-        
     });
 
     listcard.push(boostFrame)
-
-
 
 }
 
@@ -768,7 +778,7 @@ export function create_boost_card(boostData, index, count, posX, posY, card_list
 }
 
 
-export function create_vote_project_card(obj, x, y, cardlist) {
+export function create_vote_project_card(obj, x, y, cardlist, isRu) {
     const style = global_style.vote_project || {
         color: rgb(60, 80, 100),
         textColor: rgb(255, 255, 255)
@@ -789,7 +799,7 @@ export function create_vote_project_card(obj, x, y, cardlist) {
 
     // Заголовок проекта
     card.add([
-        text(obj.name, {
+        text(isRu ? obj.name : (obj.name_eng || obj.name), {
             size: 24,
             font: "sans-serif",
             width: WIDTH - 60,
@@ -803,7 +813,7 @@ export function create_vote_project_card(obj, x, y, cardlist) {
 
     // Описание проекта
     card.add([
-        text(obj.description, {
+        text(isRu ? obj.description : (obj.description_eng || obj.description), {
             size: 18,
             font: "sans-serif",
             width: WIDTH - 60,
@@ -817,8 +827,12 @@ export function create_vote_project_card(obj, x, y, cardlist) {
 
     // Информация о стоимости и голосах
     const infoText = obj.character_open
-        ? `💰 Стоимость: ${obj.dealy_cost}  в день|🗳️ Голоса: ${obj.vote} в день`
-        : `🔒 Открытие: ${obj.cost_open}`;
+        ? (isRu
+            ? `💰 Стоимость: ${obj.dealy_cost}  в день|🗳️ Голоса: ${obj.vote} в день`
+            : `💰 Cost: ${obj.dealy_cost} per day | 🗳️ Votes: ${obj.vote} per day`)
+        : (isRu
+            ? `🔒 Открытие: ${obj.cost_open}`
+            : `🔒 Unlock: ${obj.cost_open}`);
 
     card.add([
         text(infoText, {
@@ -838,7 +852,7 @@ export function create_vote_project_card(obj, x, y, cardlist) {
     return card;
 }
 
-export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
+export function create_vote_boost_card(obj, x, y, cardlist, currentVotes, isRu) {
     let isUnlocked = currentVotes >= obj.requirements_vote;
     const style = global_style.vote_boost || {
         color: rgb(100, 60, 120),
@@ -858,7 +872,7 @@ export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
 
     // Заголовок бонуса
     card.add([
-        text(obj.name, {
+        text(isRu ? obj.name : (obj.name_eng || obj.name), {
             size: 20,
             font: "sans-serif",
             width: WIDTH - 60,
@@ -872,7 +886,7 @@ export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
 
     // Описание бонуса
     card.add([
-        text(obj.description, {
+        text(isRu ? obj.description : (obj.description_eng || obj.description), {
             size: 16,
             font: "sans-serif",
             width: WIDTH - 60,
@@ -886,9 +900,9 @@ export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
 
     // Требования для разблокировки
     const statusText = isUnlocked 
-        ? "✅ Разблокировано" 
-        : `🗳️ Требуется: ${currentVotes}/${obj.requirements_vote} голосов`;
-
+        ? (isRu ? "✅ Разблокировано" : "✅ Unlocked")
+        : (isRu ? `🗳️ Требуется: ${currentVotes}/${obj.requirements_vote} голосов`
+                : `🗳️ Required: ${currentVotes}/${obj.requirements_vote} votes`);
     card.add([
         text(statusText, {
             size: 16,
@@ -936,7 +950,7 @@ export function create_vote_boost_card(obj, x, y, cardlist, currentVotes) {
 }
 
 
-export function create_settings_window(character_data, cardlist,  isRu, end_warning) {
+export function create_settings_window(character_data, cardlist, isRu, end_warning) {
     const style = {
         color: rgb(50, 50, 80),
         outline: rgb(255, 160, 122), 
@@ -963,7 +977,7 @@ export function create_settings_window(character_data, cardlist,  isRu, end_warn
 
     // Заголовок
     window.add([
-        text("⚙️ Настройки", {
+        text(isRu ? "⚙️ Настройки" : "⚙️ Settings", {
             size: 32,
             font: "sans-serif",
         }),
@@ -974,7 +988,7 @@ export function create_settings_window(character_data, cardlist,  isRu, end_warn
 
 
     window.add([
-        text("💰 Всего заработано за всё время:", {
+        text(isRu ? "💰 Всего заработано за всё время:" : "💰 Total earned all time:", {
             size: 22,
             font: "sans-serif",
         }),
@@ -1051,7 +1065,7 @@ export function create_settings_window(character_data, cardlist,  isRu, end_warn
     ]);
 
     deleteBtn.add([
-        text('🗑️ Удалить игру', {
+        text(isRu ? '🗑️ Удалить игру' : '🗑️ Delete game', {
             size: 20,
             font: "sans-serif",
             width: WIDTH - 60,
@@ -1074,7 +1088,9 @@ export function create_settings_window(character_data, cardlist,  isRu, end_warn
     ]);
 
     rainToggle.add([
-        text(character_data.character.is_rain ? "☔ Дождь: ВКЛ" : "☔ Дождь: ВЫКЛ", {
+        text(character_data.character.is_rain
+            ? (isRu ? "☔ Дождь: ВКЛ" : "☔ Rain: ON")
+            : (isRu ? "☔ Дождь: ВЫКЛ" : "☔ Rain: OFF"), {
             size: 20,
             font: "sans-serif",
             width: WIDTH - 60,
