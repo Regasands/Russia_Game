@@ -44,7 +44,7 @@ function typeWrite(textt, all_text = false) {
     // Сместим текст чуть ниже внутри рамки (anchor "top" и положительный y)
     const label = card.add([
         text("", {
-            size: 23,
+            size: 18,
             width: WIDTH - 180,
             font: "sans-serif",
             lineSpacing: 8,
@@ -52,7 +52,7 @@ function typeWrite(textt, all_text = false) {
                 "": { color: rgb(255, 255, 255), shadow: { blur: 2, color: rgb(0,0,0), offset: vec2(2,2) } }
             }
         }),
-        pos(0, 130), // было (0, -200), теперь чуть ниже верхнего края рамки
+        pos(0, 150), // было (0, -200), теперь чуть ниже верхнего края рамки
         anchor("bot"),
         z(101),
         "train_text_label"

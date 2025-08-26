@@ -262,13 +262,13 @@ export function profitupgradeScene() {
     onClick(`buy_diamond`, (btn) => {
         animation_scale_obj(btn, 0.9, 1)
         if (
-            (gameData.character.money >=  (click * 2) * gameData.character.cost_diamond) ||
-            (click == 1 && gameData.character.money >= gameData.character.cost_diamond)
+            (gameData.character.money >=  (click * 2) * gameData.character.cost_diamond * 20) ||
+            (click == 1 && gameData.character.money >= gameData.character.cost_diamond * 20)
         )
             {
             if  (
                 (time() - btn.last_time < 1) &&
-                (gameData.character.money >=  (click * 2) * gameData.character.cost_diamond)
+                (gameData.character.money >=  (click * 2) * gameData.character.cost_diamond * 20)
             ){
                 click  *= 2
             } else {
@@ -277,7 +277,7 @@ export function profitupgradeScene() {
             btn.last_time = time()
 
             gameData.character.diamonds += click;
-            gameData.character.money -= gameData.character.cost_diamond * click;
+            gameData.character.money -= gameData.character.cost_diamond * 20 * click;
             delcard(cardlist)
             wait(wait_enimation - 0.04, () => {
                 create_exchanger_card(cardlist, gameData.character.cost_diamond);

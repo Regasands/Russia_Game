@@ -10,6 +10,7 @@ import { settingScene } from './scenes/setting.js';
 import { loadGameData, saveGameData } from './gameStorge.js';
 import { trainScenee } from './scenes/train_scene.js';
 import { endGame } from './scenes/endGame.js';
+import { shopScene } from './scenes/shop.js';
 
 // Функция загрузки всех ресурсов игры
 function loadAllGameResources() {
@@ -147,7 +148,6 @@ window.addEventListener('load', () => {
                 startGame(null);
             });
     } else {
-        console.log('Running in standalone mode (no Yandex SDK)');
         startGame(null);
     }
 });
@@ -188,12 +188,10 @@ function startGame(ysdk) {
     // Загружаем все сюжетное и только после этого запускаем сцены
     loadJSON("messages", "message/convers/main.json")
         .then(data => {
-            console.log("messages loaded", data);
 
             let gameData = loadGameData();
             const userLang = getUserLang(ysdk);
-            
-            console.log('Detected language:', userLang);
+        
             gameData.character.is_ru = userLang.startsWith("ru");
             saveGameData(gameData);
 
@@ -206,7 +204,8 @@ function startGame(ysdk) {
             settingScene();
             mainScene();
             trainScenee(data);
-            
+            shopScene();
+
             if (gameData.character.is_first_game) {
 
                 go("train");
@@ -230,8 +229,9 @@ function startGame(ysdk) {
             settingScene();
             mainScene();
             trainScenee({});
+            shopScene();
 
-            
+
             if (gameData.character.is_first_game) {
                 // Нужно передать какие-то данные для обучения
 

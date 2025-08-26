@@ -204,7 +204,7 @@ export function change_boost_character(gameData){
 };
 
 // Добавляем функцию для затемняющего слоя
-function addDarkOverlay() {
+export function addDarkOverlay() {
     add([
         rect(width(), height()),
         color(0, 0, 0),
@@ -362,6 +362,8 @@ export function mainScene() {
                     go('vote')
                 } else if (buttons_game[i] == 'setting') {
                     go('setting')
+                } else if (buttons_game[i] == 'shop') {
+                    go('shop')
                 }
              });
 
@@ -422,9 +424,12 @@ export function mainScene() {
             saveGameData(gameData);
         })
 
+
+
         wait(4, () => {
 
             dayTimer = loop(23, () => {
+
                 gameData.character.days += 1
                 gameData.character.time_game = 0
                 gameData.character.money += dailyPassiveIncome;

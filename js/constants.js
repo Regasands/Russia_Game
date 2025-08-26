@@ -15,11 +15,11 @@ export const wait_enimation = 0.05
 export const character = {
     // Базовые ресурсы
     money: 180,
-    diamonds: 10,
+    diamonds: 100,
     reputation: 0,
     energy: 200, 
     time_game: 20,
-    cost_diamond: 100,
+    cost_diamond: 5,
 
 
     // прокачиваемые  значения 

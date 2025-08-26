@@ -647,7 +647,7 @@ export function create_exchanger_card(cardlist, cost) {
 
     // Цена с иконкой
     card.add([
-        text(`💰 Текущая цена: ${cost}`, data),
+        text(`💰 Текущая цена: ${cost} продать, купить за ${cost * 20}`, data),
         pos(0, 10),
         color(style.text.titleColor),
         anchor('center'),
@@ -696,7 +696,7 @@ export function create_exchanger_card(cardlist, cost) {
 }
 
 
-export function create_boost_card(boostData, index, count, posX, posY, card_list) {
+export function create_boost_card(boostData, index, count, posX, posY, card_list, rew = false, is_ru = false) {
     const style = global_style.energy_recovery
     const card = add([
         rect(WIDTH - 10, 80, { radius: 12 }),
@@ -744,12 +744,26 @@ export function create_boost_card(boostData, index, count, posX, posY, card_list
         anchor("center"),
         z(2)
     ]);
-
     // Время действия и цена
+    const texts = {
+        ru: {
+            time: 'сек',
+            cost: rew ? '📺 За рекламу' : `💎 ${boostData.cost}`,
+            available: `У вас есть: ${count}`
+        },
+        en: {
+            time: 'sec', 
+            cost: rew ? '📺 For ad' : `💎 ${boostData.cost}`,
+            available: `You have: ${count}`
+        }
+    };
+
+    const langTexts = is_ru ? texts.ru : texts.en;
+
     card.add([
-        text(`⏱️ ${boostData.time}сек / 💰 ${boostData.cost}`, {
+        text(`⏱️ ${boostData.time}${langTexts.time} / ${langTexts.cost}`, {
                 size: 20,
-                font: "sans-serif",
+                font: "sans-serif", 
                 width: WIDTH - 80,
                 align: "center",
                 lineSpacing: 8
@@ -761,11 +775,11 @@ export function create_boost_card(boostData, index, count, posX, posY, card_list
     ]);
 
     card.add([
-        text(`У вас есть: ${count}`, {
+        text(langTexts.available, {
                 size: 20,
                 font: "sans-serif",
                 width: WIDTH - 80,
-                align: "center",
+                align: "center", 
                 lineSpacing: 8
             }),
         color(style.textColor),
@@ -775,6 +789,53 @@ export function create_boost_card(boostData, index, count, posX, posY, card_list
     ]);
 
     card_list.push(card)
+}
+
+export function createDiamondsAdCard(x, y, cardlist,  is_interval, is_ru) {
+    let name =   is_interval ? 'get_random_diamonds_rwd' : 'get_diamonds_rwd'
+    const style = global_style.energy_recovery
+    const card = add([
+        rect(WIDTH - 10, 80, { radius: 12 }),
+        pos(x, y),
+        anchor("center"),
+        color(style.color),
+        outline(2, rgb(0, 0, 0)),
+        opacity(0.6),
+        z(100),
+        area(),
+        name,
+    ]);
+
+    // Текст описания
+    card.add([
+        text(is_ru ? "💎 Получить алмазы за рекламу" : "💎 Get diamonds for ad", {
+            size: 24,
+            font: "sans-serif",
+            width: WIDTH - 80,
+            align: "center",
+            lineSpacing: 8
+        }),
+        color(style.textColor),
+        pos(0, -60),
+        anchor("center"),
+        z(2)
+    ]);
+
+    // Количество алмазов
+    let textt = is_ru 
+        ? (is_interval ? 'Получить случайное количество 💎 от 1 до 250!' : 'Получить 100 💎')
+        : (is_interval ? 'Get a random amount of 💎 from 1 to 250!' : 'Get 100 💎');
+    card.add([
+        text(textt,  {
+            size: 20,
+            font: "sans-serif",
+            align: "center"
+        }),
+        pos(0, 10),
+        anchor("center"),
+        z(2)
+    ]);
+    cardlist.push(card)
 }
 
 

@@ -1,19 +1,9 @@
 import { create_boost_card } from "../card.js";
 import { WIDTH,  HEIGHT, BUTTONSIZE, time_boost } from "../constants.js";
 import { loadGameData, saveGameData } from "../gameStorge.js";
-import { makeOrnateFrame, animation_scale_obj, spawnRain } from "./main.js";
+import { makeOrnateFrame, animation_scale_obj, spawnRain, addDarkOverlay} from "./main.js";
 import { delcard } from "./passive.js";
 
-function addDarkOverlay() {
-    add([
-        rect(width(), height()),
-        color(0, 0, 0),
-        opacity(0.18),
-        fixed(),
-        z(98),
-        "dark_overlay"
-    ]);
-}
 
 
 export function updatestateScene() {
@@ -83,7 +73,7 @@ export function updatestateScene() {
         });
 
         Object.keys(time_boost).forEach((key) => {
-           create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist, gameData.character.is_ru)
+           create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key *  150 + 150, cardlist, false, gameData.character.is_ru)
             onClick(`boost_button_${time_boost[key].name}`, (btn) => {
                 animation_scale_obj(btn, 0.9, 1)
                 wait(0.1, () => {
@@ -93,7 +83,7 @@ export function updatestateScene() {
                         gameData.character_boost[key].time_start = time();
                         stateLabel.text = stateText();
                         delcard([btn]);
-                        create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key * 150 + 150, cardlist);
+                        create_boost_card(time_boost[key], key, gameData.character_boost[key].count, WIDTH / 2, key * 150 + 150, cardlist, false, gameData.character.is_ru);
                         saveGameData(gameData);
                     }
             })

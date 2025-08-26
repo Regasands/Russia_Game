@@ -112,7 +112,7 @@ export function voteScene() {
         render_card(gameData.character_object_vote)
         // рисууем кнопки перехода 
         for (let i = 2; i < button_vote.length - 1; i++) {
-            loadSprite(button_vote[i], `../sprites/button/vote/${button_vote[i]}.png`);
+            loadSprite(button_vote[i], `sprites/button/vote/${button_vote[i]}.png`);
             
             const btn = add([
                 pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
