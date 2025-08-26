@@ -35,13 +35,7 @@ export const makeOrnateFrame = (width, height) => {
         z(100)
     ]);
     
-    // Угловые завитушки (псевдографика)
-    const corners = [
-        { pos: vec2(0, 0), char: "╔" },
-        { pos: vec2(WIDTH - 12, 0), char: "╗" },
-        { pos: vec2(0,  HEIGHT / 12), char: "╚" },
-        { pos: vec2(WIDTH - 12, HEIGHT / 12), char: "╝" }
-    ];         
+
 };
 
 

@@ -58,8 +58,6 @@ export const character = {
 
     // нужно для обучения
     is_first_game: true,
-    is_first_passive: true,
-    is_first_profit: true,
     
 };
 

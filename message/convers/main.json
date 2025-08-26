@@ -1,0 +1,94 @@
+{
+  "train_hero": {
+    "name": {
+      "ru": "Николай",
+      "eng": "Nikolai"
+    },
+    "age": "58",
+    "description": {
+      "ru": "Старый друг твоего отца. Суровый, как сибирская зима, и не терпит разгильдяйства.",
+      "eng": "An old friend of your father's. Tough as a Siberian winter and has no patience for slacking."
+    },
+    "lore": {
+      "ru": "Николай и твой отец прошли огонь и воду. Он не понаслышке знает, что такое терять всё и подниматься с колен. После твоего косяка он приехал не помогать — он приехал делать из тебя мужчину, потому что твой отец, его друг, не дожил до этого дня. Его методы жёсткие, слова — как обухом по голове, но это единственный шанс тебя не растерять последнее, что у тебя осталось.",
+      "eng": "Nikolai and your father went through hell and high water together. He knows firsthand what it's like to lose everything and get back on your feet. After your screw-up, he didn't come to help—he came to make a man out of you, because your father, his friend, didn't live to see the day. His methods are harsh, his words are like a blow to the head, but this is the only chance to keep you from losing the last thing you have left."
+    },
+    "effect_type": {
+      "ru": "Суровая опека",
+      "eng": "Tough Love"
+    },
+    "message": {
+      "0": {
+        "text": {
+          "ru": "Аахахаха, Утро доброе , сынок! Помншиь, что ты вчера наговорил и сделал с  Ванькой?  правильно,  ты же бухой был, в общем из-за уважение к твеом отцу, я тебе чуть расскажу что как",
+          "eng": "Hahaha, good morning, son! Do you remember what you said and did to Vanka yesterday? Right, you were drunk. Out of respect for your father, I'll tell you a bit about how things are."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "1": {
+        "text": {
+          "ru": "Это «Доход». Будешь пахать — будет что жрать. Не будешь — уедешь на нары.",
+          "eng": "This is Profit. Work hard — you'll have something to eat. Don't — you'll end up in jail."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "2": {
+        "text": {
+          "ru": "«Пассивка». Чтобы башка не только для шапки работала. Вкладывайся во что-то умное, а не в свою пьяную дурь. Прогоришь — будешь меня вспоминать, пока подметаешь улицы.",
+          "eng": "'Passive'. So your head isn't just for wearing a hat. Invest in something smart, not your drunken nonsense. You go bankrupt — you'll remember me while you're sweeping the streets."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "3": {
+        "text": {
+          "ru": "А это твой крест. «Голоса». Из-за твоего пьяного базара теперь пол-деревни тебя в гробу видало. Теперь ползи и вымаливай прощение. Упадешь в грязь лицом — твой отец в гробу перевернётся.",
+          "eng": "And this is your cross to bear. 'Votes'. Because of your drunken rant, half the village wants you dead. Now crawl and beg for forgiveness. You make a fool of yourself — your father will turn in his grave."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "4": {
+        "text": {
+          "ru": "«Улучшения». Временные костыли. Не надейся на них, а то сломаешься, когда их отнимут.",
+          "eng": "'Upgrades'. Temporary crutches. Don't rely on them, or you'll break when they're taken away."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "5": {
+        "text": {
+          "ru": "«Магазин». Будешь смотреть рекламу, как клоун. Зато бесплатно. Стыдно? А должно быть. Зато жив останешься.",
+          "eng": "'Shop'. You'll watch ads like a clown. But it's free. Ashamed? You should be. But at least you'll stay alive."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "6": {
+        "text": {
+          "ru": "«Настройки». Единственное, что тебе пока по зубам — кнопки тыкать. Хватайся за эту соломинку.",
+          "eng": "'Settings'. The only thing you can handle right now is pushing buttons. Clutch at that straw."
+        },
+        "choices": "None",
+        "effect": "None"
+      },
+      "7": {
+        "text": {
+          "ru": "Всё. Дальше сам. Опозоришь имя отца — я тебя сам прибью. Удачи. Она тебе нужна.",
+          "eng": "That's it. You're on your own now. You disgrace your father's name — I'll kill you myself. Good luck. You'll need it."
+        },
+        "choices": "None",
+        "effect": "None"
+      }
+    },
+    "nika": {
+      "name": "Ника",
+      "age": "18",
+      "description": "Бойкая бунтарка с короткими чёрными волосами, в рваных джинсах и старых кедах, с дерзким взглядом и полуулыбкой.",
+      "lore": "Ника всегда шла против правил. С детства она огрызалась на любое давление, не уважала чужие границы и брала то, что хотела. В деревне её сторонятся: её боятся, но не трогают. В игре её роль — приносить исключительно негативные эффекты. Она может вымогать деньги, требовать редкие вещи, шантажировать игрока. Игроку предлагаются только неприятные выборы: дать требуемое и потерять ресурсы, либо отказать и лишиться репутации. Её появление сопровождается царапающим звуковым фоном и насмешливыми репликами, усиливающими атмосферу давления и несправедливости.",
+      "effect_type": "Негативные эффекты"
+    }
+  }
+}

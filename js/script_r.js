@@ -6,6 +6,9 @@ import { buttons_game, button_profit, button_passive } from './constants.js';
 import { updatestateScene } from './scenes/update.js';
 import { voteScene } from './scenes/vote.js';
 import { settingScene } from './scenes/setting.js'; // добавить импорт
+import { loadGameData } from './gameStorge.js';
+import { trainScenee } from './scenes/train_scene.js';
+
 
 const k = kaboom({
     width: WIDTH,
@@ -16,9 +19,21 @@ const k = kaboom({
 
 
 
+
+
+// загрузка фоновых персонажей
+loadSprite("hero_train", `../sprites/character_back/train.png`)
+
+// загруз для обучения 
+loadSprite('arrow', '../sprites/icon/arrow.png')
+
+
+loadSound('train_music', 'sounds/background_sounds/train_music.mp3')
+
+
+
 //  Загрузка для главнойц страрницы
-
-
+loadSound('talk_hero', 'sounds/game_sounds/talk_hero.mp3')
 
 loadSprite("background_profit", `../sprites/background/profit.png`, {
         width: WIDTH,
@@ -86,7 +101,6 @@ loadSprite("coin", "sprites/icon/coin_am.png", {
 
 loadSound('hero_click', 'sounds/game_sounds/Click_mouse_snd.wav')
 
-
 // загрузка для profit сцены
 
 
@@ -101,7 +115,7 @@ loadSound('buy_button', 'sounds/game_sounds/applepay.mp3')
 //  загрнука для сцены passive
 
 
-loadSound("ahyou", "sounds/game_sounds/fack_you.mp3");
+loadSound("ahyou", "sounds/game_sounds/fack_you.mp3")
 loadSound('upgrade_button', 'sounds/game_sounds/buy_1.mp3')
 loadSound('no_money', 'sounds/game_sounds/where_money.mp3')
 
@@ -150,15 +164,42 @@ const track1 = play("bg2", {
 });
 
 
-// Регистрация сцен
-passiveincomeScene();
-profitupgradeScene();
-updatestateScene();
-voteScene();
-settingScene(); // добавить инициализацию
-mainScene();
-go("main");
 
+
+// Загружаем все сюжетное и только после этого запускаем сцены
+loadJSON("messages", "../message/convers/main.json")
+    .then(data => {
+        console.log("messages loaded", data);
+
+        passiveincomeScene();
+        profitupgradeScene();
+        updatestateScene();
+        voteScene();
+        settingScene();
+        mainScene();
+        if (loadGameData().character.is_first_game) {
+            trainScenee(data, track1); // передаём data напрямую
+            go("train");
+        } else {
+            go("main");
+        }
+    })
+    .catch(e => console.error("messages error", e));
+
+
+// Удалите или закомментируйте этот блок, чтобы не было двойного запуска сцен:
+// passiveincomeScene();
+// profitupgradeScene();
+// updatestateScene();
+// voteScene();
+// settingScene(); // добавить инициализацию
+// mainScene();
+// if (loadGameData().character.is_first_game) {
+//     trainScenee();
+//     go("train");
+// } else {
+//     go("main");
+// }
 
 // Функция обновления масштаба
         // function updateGlobalScale(object) {

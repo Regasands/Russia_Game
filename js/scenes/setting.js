@@ -7,6 +7,16 @@ import { delcard } from "./passive.js";
 
 export function settingScene() {
     scene("setting", () => {
+        add([
+            rect(width(), height()),
+            color(0, 0, 0),
+            opacity(0.3), // Лёгкое затемнение
+            fixed(),
+            z(98),
+            "dark_overlay"
+        ]);
+
+
         let card_list = []
         let gameData = loadGameData()
         onLoad(() => {
