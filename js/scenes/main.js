@@ -222,6 +222,35 @@ export function mainScene() {
         let gameData = loadGameData();
 
         onLoad(() => {
+                    // Отриовка кнопок
+            for (let i = 0; i < buttons_game.length; i++) {
+                const btn = add([
+                    pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
+                    sprite(buttons_game[i]),
+                    scale(BUTTONSIZE / 64),
+                    area({ scale: true }), 
+                    anchor("center"), // Меняем с "topleft" на "center"
+                    `button_${buttons_game[i]}` // Тег для идентификации
+                ]);
+
+                onClick(`button_${buttons_game[i]}`, () => {
+                    animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+                    if (buttons_game[i] == 'passive') {
+                        go('passive')
+                    } else if (buttons_game[i] == 'profit') {
+                        go('profit')
+                    } else if (buttons_game[i] == 'update') {
+                        go('update_state')
+                    } else if (buttons_game[i] == 'vote') {
+                        go('vote')
+                    } else if (buttons_game[i] == 'setting') {
+                        go('setting')
+                    } else if (buttons_game[i] == 'shop') {
+                        go('shop')
+                    }
+                });
+            }
+
             add([
                 sprite(`background_${gameData.character.id_background}`),
                 anchor('center'),
@@ -310,7 +339,7 @@ export function mainScene() {
             const time_game = Number(gameData.character.time_game);
 
             return `
-            💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}/день    
+            💰 ${money}        💎 ${diamonds}            📊 +${dailyIncome}    
             🗳️ ${Math.floor(votes)}    🔋 ${energy}/${Math.floor(upgrades.energy_max.value(gameData.character.energy_max) * gameData.character.boost.energy_max)}
               📅 ${days}                                   ⏳ ${time_game}:00
             `.replace(/\n\s+/g, '\n').trim();
@@ -339,37 +368,7 @@ export function mainScene() {
         ]);
 
 
-        // Отриовка кнопок
-        for (let i = 0; i < buttons_game.length; i++) {
-            const btn = add([
-                pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
-                sprite(buttons_game[i]),
-                scale(BUTTONSIZE / 64),
-                area({ scale: true }), 
-                anchor("center"), // Меняем с "topleft" на "center"
-                `button_${buttons_game[i]}` // Тег для идентификации
-            ]);
 
-            onClick(`button_${buttons_game[i]}`, () => {
-                animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
-                if (buttons_game[i] == 'passive') {
-                    go('passive')
-                } else if (buttons_game[i] == 'profit') {
-                    go('profit')
-                } else if (buttons_game[i] == 'update') {
-                    go('update_state')
-                } else if (buttons_game[i] == 'vote') {
-                    go('vote')
-                } else if (buttons_game[i] == 'setting') {
-                    go('setting')
-                } else if (buttons_game[i] == 'shop') {
-                    go('shop')
-                }
-             });
-
-
-
-        }
 
         // рендер дня и ночи 
         const updateDayNight = setupDayNightSystem();

@@ -153,16 +153,29 @@ window.addEventListener('load', () => {
 });
 
 function startGame(ysdk) {
+    if (ysdk && ysdk.features && ysdk.features.LoadingAPI) {
+        ysdk.features.LoadingAPI.ready();
+    }
+
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+            e.preventDefault();
+        }
+    });
+
     // Инициализация Kaboom
     kaboom({
         width: WIDTH,
         height: HEIGHT,
         background: [0, 0, 0, 0],
-        // Для Яндекс Игр лучше не указывать root, они сами управляют DOM
     });
+
 
     // Загрузка всех ресурсов игры
     loadAllGameResources();
+
 
     // Запуск фоновой музыки
     const track1 = play("bg2", {

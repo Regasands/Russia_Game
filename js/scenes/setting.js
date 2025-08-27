@@ -20,6 +20,22 @@ export function settingScene() {
         let card_list = []
         let gameData = loadGameData()
         onLoad(() => {
+            
+            const btn = add([
+                pos(BUTTONSIZE, HEIGHT),
+                sprite("home"),
+                scale(BUTTONSIZE / 64),
+                area(),
+                anchor("botright"),
+                "home",
+            ])
+
+
+            onClick('home', () => {
+                animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+                go("main");
+            });
+            
             add([
                 sprite(`background_${gameData.character.id_background}`),
                 pos(WIDTH / 2, HEIGHT / 2),
@@ -76,21 +92,6 @@ export function settingScene() {
         
         create_settings_window(gameData, card_list, gameData.character.is_ru, 0)
 
-
-        const btn = add([
-            pos(BUTTONSIZE, HEIGHT),
-            sprite("home"),
-            scale(BUTTONSIZE / 64),
-            area(),
-            anchor("botright"),
-            "home",
-        ])
-
-
-        onClick('home', () => {
-            animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
-            go("main");
-        });
 
 
     loop(1, () => {

@@ -44,6 +44,50 @@ export function passiveincomeScene () {
         let gameData = loadGameData();
 
         onLoad(() => {
+                    // рисууем кнопки перехода 
+        for (let i = 1; i < button_passive.length; i++) {
+            loadSprite(button_passive[i], `../sprites/button/passive/${button_passive[i]}.png`);
+            
+            const btn = add([
+                pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
+                sprite(button_passive[i]),
+                scale(BUTTONSIZE / 64),
+                area({ scale: true }), 
+                anchor("center"),
+                `button_${button_passive[i]}` 
+            ]);
+
+            onClick(`button_${button_passive[i]}`, () => {
+                    animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+                    if (button_passive[i] == 'smile_face') {
+                        play('ahyou', {
+                            volume: 10,
+                            speed: 1,
+                            loop: false,
+                        })
+                    }  else {
+                        delcard(global_card);
+                        global_card = [];
+                        if (button_passive[i] == 'real_estate') {
+                            render_cards(passive_income.real_estate, 'real_estate');
+                        }
+                        if (button_passive[i] == 'village_business') {
+                            render_cards(passive_income.village_business, 'village_business');
+                        }
+                        if (button_passive[i] == 'shadow_economy') {
+                            render_cards(passive_income.shadow_economy, 'shadow_economy');
+                        }
+
+                        if (button_passive[i] == 'investments'){
+                            render_cards(passive_income.investments, 'investments');
+                        }
+                    }
+
+                });
+
+        }
+
+        
             add([
                 sprite("background_passive"),
                 pos(WIDTH / 2, HEIGHT / 2),
@@ -79,7 +123,7 @@ export function passiveincomeScene () {
             const dailyIncome = Math.floor(Number(dailyPassiveIncome));
 
             return `
-            💰 ${money}    🏦 ${(key_bid * 100).toFixed(1)}%    📊 +${dailyIncome}/день
+            💰 ${money}    🏦 ${(key_bid * 100).toFixed(1)}%    📊 +${dailyIncome}
             💎 ${diamonds}
             `.replace(/\n\s+/g, '\n').trim();
         };
@@ -256,48 +300,7 @@ export function passiveincomeScene () {
 
 
         
-        // рисууем кнопки перехода 
-        for (let i = 1; i < button_passive.length; i++) {
-            loadSprite(button_passive[i], `../sprites/button/passive/${button_passive[i]}.png`);
-            
-            const btn = add([
-                pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
-                sprite(button_passive[i]),
-                scale(BUTTONSIZE / 64),
-                area({ scale: true }), 
-                anchor("center"),
-                `button_${button_passive[i]}` 
-            ]);
 
-            onClick(`button_${button_passive[i]}`, () => {
-                    animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
-                    if (button_passive[i] == 'smile_face') {
-                        play('ahyou', {
-                            volume: 10,
-                            speed: 1,
-                            loop: false,
-                        })
-                    }  else {
-                        delcard(global_card);
-                        global_card = [];
-                        if (button_passive[i] == 'real_estate') {
-                            render_cards(passive_income.real_estate, 'real_estate');
-                        }
-                        if (button_passive[i] == 'village_business') {
-                            render_cards(passive_income.village_business, 'village_business');
-                        }
-                        if (button_passive[i] == 'shadow_economy') {
-                            render_cards(passive_income.shadow_economy, 'shadow_economy');
-                        }
-
-                        if (button_passive[i] == 'investments'){
-                            render_cards(passive_income.investments, 'investments');
-                        }
-                    }
-
-                });
-
-        }
 
 
         

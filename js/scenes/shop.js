@@ -12,6 +12,23 @@ export function shopScene() {
         let gameData = loadGameData();
         let cardlist = []
         onLoad(() => {
+
+            const btn = add([
+                pos(BUTTONSIZE, HEIGHT),
+                sprite("home"),
+                scale(BUTTONSIZE / 64),
+                area(),
+                anchor("botright"),
+                "home",
+            ])
+
+        onClick('home', () => {
+            animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+            go("main");
+        });
+    
+
+
             add([
                 sprite("background_passive"),
                 pos(WIDTH / 2, HEIGHT / 2),
@@ -54,20 +71,6 @@ export function shopScene() {
         ]);
 
 
-        const btn = add([
-            pos(BUTTONSIZE, HEIGHT),
-            sprite("home"),
-            scale(BUTTONSIZE / 64),
-            area(),
-            anchor("botright"),
-            "home",
-        ])
-
-        onClick('home', () => {
-            animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
-            go("main");
-        });
-    
         loop(1, () => {
             spawnRain(gameData.character.is_rain, WIDTH, HEIGHT);
         });

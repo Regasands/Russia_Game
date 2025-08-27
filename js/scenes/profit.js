@@ -33,6 +33,38 @@ export function profitupgradeScene() {
         let currentIndex_background = 0
 
         onLoad(() => {
+
+                    // рисууем кнопки перехода 
+            for (let i = 1; i < button_profit.length; i++) {
+                const btn = add([
+                    pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
+                    sprite(button_profit[i]),
+                    scale(BUTTONSIZE / 64),
+                    area({ scale: true }), 
+                    anchor("center"),
+                    `button_${button_profit[i]}` 
+                ]);
+
+                onClick(`button_${button_profit[i]}`, (btn) => {
+                    animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+                    delcard(cardlist)
+                    if (button_profit[i] == 'upgrade') {
+                        render_card(upgrades, button_profit[i])
+                    } else if (button_profit[i] == 'new_character') {
+                            create_card_hero_background(currentIndex_hero, 'hero', cardlist, gameData.character.is_ru, gameData)
+                    } else if (button_profit[i] == 'new_background') {
+                            create_card_hero_background(currentIndex_background, 'background', cardlist, gameData.character.is_ru, gameData)
+                    } else if (button_profit[i] == 'new_event') {
+                        change_boost_character(gameData)
+                        console.log(gameData.character.boost)
+                        create_card_boost_list(gameData.character.boost, cardlist, gameData.character.is_ru)
+                    } else if (button_profit[i] == 'exchanger') {
+                        create_exchanger_card(cardlist, gameData.character.cost_diamond)
+                    }
+
+                });
+            };
+
             add([
                 sprite("background_profit"),
                 pos(WIDTH / 2, HEIGHT / 2),
@@ -289,36 +321,7 @@ export function profitupgradeScene() {
     })
 
 
-        // рисууем кнопки перехода 
-        for (let i = 1; i < button_profit.length; i++) {
-            const btn = add([
-                pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.5),
-                sprite(button_profit[i]),
-                scale(BUTTONSIZE / 64),
-                area({ scale: true }), 
-                anchor("center"),
-                `button_${button_profit[i]}` 
-            ]);
 
-            onClick(`button_${button_profit[i]}`, (btn) => {
-                animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
-                delcard(cardlist)
-                if (button_profit[i] == 'upgrade') {
-                    render_card(upgrades, button_profit[i])
-                } else if (button_profit[i] == 'new_character') {
-                        create_card_hero_background(currentIndex_hero, 'hero', cardlist, gameData.character.is_ru, gameData)
-                } else if (button_profit[i] == 'new_background') {
-                        create_card_hero_background(currentIndex_background, 'background', cardlist, gameData.character.is_ru, gameData)
-                } else if (button_profit[i] == 'new_event') {
-                    change_boost_character(gameData)
-                    console.log(gameData.character.boost)
-                    create_card_boost_list(gameData.character.boost, cardlist, gameData.character.is_ru)
-                } else if (button_profit[i] == 'exchanger') {
-                    create_exchanger_card(cardlist, gameData.character.cost_diamond)
-                }
-
-            });
-        };
         
         // ренедрим карты
 

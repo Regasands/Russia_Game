@@ -37,6 +37,20 @@ export function voteScene() {
                 z(-100),
                 scale(0.5)
             ]);
+
+                    const btn = add([
+            pos(BUTTONSIZE, HEIGHT),
+            sprite("home"),
+            scale(BUTTONSIZE / 64),
+            area(),
+            anchor("botright"),
+            "home",
+        ])
+
+        onClick('home', () => {
+            animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
+            go("main");
+        });
         });
         // создаем базовые значкии
         makeOrnateFrame(WIDTH, HEIGHT/ 10)
@@ -75,19 +89,7 @@ export function voteScene() {
         ]);
 
 
-        const btn = add([
-            pos(BUTTONSIZE, HEIGHT),
-            sprite("home"),
-            scale(BUTTONSIZE / 64),
-            area(),
-            anchor("botright"),
-            "home",
-        ])
 
-        onClick('home', () => {
-            animation_scale_obj(btn, 0.9, BUTTONSIZE / 64)
-            go("main");
-        });
         let cardlist = []
 
 

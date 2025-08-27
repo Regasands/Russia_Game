@@ -117,6 +117,24 @@ function showArrowIfNeeded(index, btns) {
 // Новый асинхронный экспорт функции trainScenee
 export function trainScenee(data) {
     scene('train', () => {
+        const btns = [];
+        onLoad(() => {
+                    // Отрисовка кнопок и сохранение их для стрелки
+
+        for (let i = 0; i < buttons_game.length; i++) {
+            const btn = add([
+                pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.7),
+                sprite(buttons_game[i]),
+                scale(BUTTONSIZE / 64),
+                area({ scale: true }), 
+                anchor("center"), // Меняем с "topleft" на "center"
+                `button_${buttons_game[i]}` // Тег для идентификации
+            ]);
+            btns.push(btn);
+        }
+
+        })
+        
         let index = 0;
         addWakeUpEffect();
         let gameData = loadGameData();
@@ -147,19 +165,6 @@ export function trainScenee(data) {
         ]);
         hero.use(fadeIn(0.7));
 
-        // Отрисовка кнопок и сохранение их для стрелки
-        const btns = [];
-        for (let i = 0; i < buttons_game.length; i++) {
-            const btn = add([
-                pos((i + 0.5) * BUTTONSIZE, HEIGHT - BUTTONSIZE * 0.7),
-                sprite(buttons_game[i]),
-                scale(BUTTONSIZE / 64),
-                area({ scale: true }), 
-                anchor("center"), // Меняем с "topleft" на "center"
-                `button_${buttons_game[i]}` // Тег для идентификации
-            ]);
-            btns.push(btn);
-        }
         
 
         let currentCard = typeWrite(data.train_hero.message[String(index)].text[userLang]);
